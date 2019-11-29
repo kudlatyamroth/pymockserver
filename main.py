@@ -1,3 +1,4 @@
+import json
 from typing import Dict
 
 import uvicorn
@@ -55,7 +56,10 @@ async def get_mocks(*, url_path: str = None, request: Request, response: Respons
         return {'code': HTTP_404_NOT_FOUND, 'status': 'Not found'}
 
     response.status_code = mock.httpResponse.status_code
-    return mock.httpResponse.body
+    try:
+        return json.loads(mock.httpResponse.body)
+    except (json.JSONDecodeError, TypeError):
+        return mock.httpResponse.body
 
 
 if __name__ == '__main__':
