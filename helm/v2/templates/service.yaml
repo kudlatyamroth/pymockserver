@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{ include "chart.name" . }}
   labels:
-  {{ include "chart.labels" . | indent 4 }}
+{{ include "chart.labels" . | indent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -11,7 +11,7 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
-      {{- if (and (or (eq .Values.service.type "NodePort") (.Values.debug.enabled)) (not (empty .Values.service.nodePort))) }}
+      {{- if (and (eq .Values.service.type "NodePort") (not (empty .Values.service.nodePort))) }}
       nodePort: {{ .Values.service.nodePort }}
       {{- end }}
   selector:
