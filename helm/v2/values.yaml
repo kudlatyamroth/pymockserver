@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   repository: kudlatyamroth/pymockserver
   tag: latest
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 imagePullSecrets: []
 nameOverride: ""

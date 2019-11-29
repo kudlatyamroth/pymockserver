@@ -33,14 +33,22 @@ spec:
             - name: http
               containerPort: 80
               protocol: TCP
+          {{- if .Values.httpLivenessProbe }}
           livenessProbe:
             httpGet:
-              path: /
+              path: /_meta/live
               port: http
+            initialDelaySeconds: 15
+            periodSeconds: 3
+          {{- end }}
+          {{- if .Values.httpReadinessProbe }}
           readinessProbe:
             httpGet:
-              path: /
+              path: /_meta/health
               port: http
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
