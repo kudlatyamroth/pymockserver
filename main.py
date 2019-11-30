@@ -12,7 +12,7 @@ from mock_types import HttpRequest, CreateModel
 from utils import request_hash, query_params_to_http_qs
 
 app = FastAPI()
-logger = logging.getLogger("api")
+logger = logging.getLogger("fastapi")
 
 mocks: Dict[str, CreateModel] = {}
 
@@ -21,7 +21,7 @@ mocks: Dict[str, CreateModel] = {}
 async def add_mock(body: CreateModel):
     req_hash = request_hash(body.httpRequest)
     mocks[req_hash] = body
-    logger.info(f'Added new mock for: {req_hash}')
+    logger.warning(f'[MockServer] Added new mock for: {req_hash}')
     return {'status': 'ok'}
 
 
@@ -33,14 +33,14 @@ async def get_mocks():
 @app.delete('/mockserver', status_code=HTTP_200_OK)
 async def delete_routes(http_request: HttpRequest):
     req_hash = request_hash(http_request)
-    logger.info(f'Deleted mock for: {req_hash}')
+    logger.warning(f'[MockServer] Deleted mock for: {req_hash}')
     return {'removed': mocks.pop(req_hash), 'mocked': mocks}
 
 
 @app.delete('/mockserver/reset', status_code=HTTP_200_OK)
 async def clear_mocks():
     mocks.clear()
-    logger.info('Clear all mocks')
+    logger.warning('[MockServer] Clear all mocks')
     return {'status': 'ok'}
 
 
