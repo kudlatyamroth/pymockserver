@@ -56,10 +56,16 @@ async def get_mocks(*, url_path: str = None, request: Request, response: Respons
         queryStringParameters=query_params_to_http_qs(request.query_params.multi_items()),
     )
 
-    mock = mocks.get(request_hash(http_request))
+    req_hash = request_hash(http_request)
+    mock = mocks.get(req_hash)
     if mock is None:
         response.status_code = HTTP_404_NOT_FOUND
         return {'code': HTTP_404_NOT_FOUND, 'status': 'Not found'}
+
+    if mock.httpResponse.remaining_times > 1:
+        mock.httpResponse.remaining_times -= 1
+    if mock.httpResponse.remaining_times == 0:
+        del mocks[req_hash]
 
     response.status_code = mock.httpResponse.status_code
     try:

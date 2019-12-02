@@ -16,14 +16,13 @@ class HttpResponse(BaseModel):
     status_code: int = Schema(200, alias='statusCode')
     headers: List[Dict[str, str]] = None
     body: Any = Schema('', description='Body that will be returned')
-
-
-class Times(BaseModel):
-    remaining_times: int = Schema(None, alias='remainingTimes')
-    unlimited: bool = True
+    remaining_times: int = Schema(
+        -1,
+        alias='remainingTimes',
+        description='Number of times this mock will be returned until deleted. -1 means unlimited'
+    )
 
 
 class CreateModel(BaseModel):
     httpRequest: HttpRequest
     httpResponse: HttpResponse
-    times: Times
