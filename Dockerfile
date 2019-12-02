@@ -1,6 +1,6 @@
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.7-alpine3.8
 
-COPY main.py mock_types.py utils.py /app/
+COPY ./src /app
 
 RUN pip install email-validator==1.0.5
 
