@@ -21,6 +21,7 @@ class HttpResponse(BaseModel):
         alias='remainingTimes',
         description='Number of times this mock will be returned until deleted. -1 means unlimited'
     )
+    delay: int = Schema(0, description='How much milliseconds wait until response')
 
 
 class CreateModel(BaseModel):

@@ -1,5 +1,6 @@
 import json
 import logging
+import time
 from typing import Dict
 
 import uvicorn
@@ -78,6 +79,9 @@ async def get_mocks(*, url_path: str = None, request: Request, response: Respons
     if mock.headers:
         for header, value in mock.headers.items():
             response.headers[header] = value
+
+    if mock.delay:
+        time.sleep(mock.delay/1000)
 
     response.status_code = mock.status_code
     try:
