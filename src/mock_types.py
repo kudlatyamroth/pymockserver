@@ -14,7 +14,7 @@ class HttpRequest(BaseModel):
 
 class HttpResponse(BaseModel):
     status_code: int = Schema(200, alias='statusCode')
-    headers: List[Dict[str, str]] = None
+    headers: Dict[str, str] = None
     body: Any = Schema('', description='Body that will be returned')
     remaining_times: int = Schema(
         -1,

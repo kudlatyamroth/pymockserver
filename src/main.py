@@ -67,6 +67,9 @@ async def get_mocks(*, url_path: str = None, request: Request, response: Respons
     if mock.httpResponse.remaining_times == 0:
         del mocks[req_hash]
 
+    for header, value in mock.httpResponse.headers.items():
+        response.headers[header] = value
+
     response.status_code = mock.httpResponse.status_code
     try:
         return json.loads(mock.httpResponse.body)
