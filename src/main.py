@@ -8,19 +8,23 @@ from starlette.requests import Request
 from starlette.responses import Response
 from starlette.status import HTTP_404_NOT_FOUND, HTTP_201_CREATED, HTTP_200_OK
 
-from mock_types import HttpRequest, CreateModel
+from mock_types import HttpRequest, CreateModel, MockedData
 from utils import request_hash, query_params_to_http_qs
 
 app = FastAPI()
 logger = logging.getLogger("fastapi")
 
-mocks: Dict[str, CreateModel] = {}
+mocks: Dict[str, MockedData] = {}
 
 
 @app.post('/mockserver', status_code=HTTP_201_CREATED)
 async def add_mock(body: CreateModel):
     req_hash = request_hash(body.httpRequest)
-    mocks[req_hash] = body
+    mock = mocks.get(req_hash)
+    if mock:
+        mock.httpResponse.append(body.httpResponse)
+    else:
+        mocks[req_hash] = MockedData(httpRequest=body.httpRequest, httpResponse=[body.httpResponse])
     logger.warning(f'[MockServer] Added new mock for: {req_hash}')
     return {'status': 'ok'}
 
@@ -57,24 +61,29 @@ async def get_mocks(*, url_path: str = None, request: Request, response: Respons
     )
 
     req_hash = request_hash(http_request)
-    mock = mocks.get(req_hash)
-    if mock is None:
+    mock_list = mocks.get(req_hash)
+    if mock_list is None:
         response.status_code = HTTP_404_NOT_FOUND
         return {'code': HTTP_404_NOT_FOUND, 'status': 'Not found'}
 
-    if mock.httpResponse.remaining_times > 1:
-        mock.httpResponse.remaining_times -= 1
-    if mock.httpResponse.remaining_times == 0:
-        del mocks[req_hash]
+    mock = mock_list.httpResponse[0]
+    if 1 >= mock.remaining_times > -1:
+        if len(mock_list.httpResponse) > 1:
+            del mock_list.httpResponse[0]
+        else:
+            del mocks[req_hash]
+    if mock.remaining_times > 1:
+        mock.remaining_times -= 1
 
-    for header, value in mock.httpResponse.headers.items():
-        response.headers[header] = value
+    if mock.headers:
+        for header, value in mock.headers.items():
+            response.headers[header] = value
 
-    response.status_code = mock.httpResponse.status_code
+    response.status_code = mock.status_code
     try:
-        return json.loads(mock.httpResponse.body)
+        return json.loads(mock.body)
     except (json.JSONDecodeError, TypeError):
-        return mock.httpResponse.body
+        return mock.body
 
 
 if __name__ == '__main__':

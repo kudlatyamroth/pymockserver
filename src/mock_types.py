@@ -26,3 +26,8 @@ class HttpResponse(BaseModel):
 class CreateModel(BaseModel):
     httpRequest: HttpRequest
     httpResponse: HttpResponse
+
+
+class MockedData(BaseModel):
+    httpRequest: HttpRequest
+    httpResponse: List[HttpResponse]
