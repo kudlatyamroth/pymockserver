@@ -1,13 +1,13 @@
-from typing import Optional, List, Tuple, Dict
+from typing import Optional, List, Tuple
 
-from mock_types import QueryString, HttpRequest
+from mock_types import QueryStrings, HttpRequest
 
 
-def join_query_string(qs: Optional[List[QueryString]]):
+def join_query_string(qs: Optional[QueryStrings]):
     if qs is None:
         return ''
-    joined_values = dict(sorted({x.name: ",".join(sorted(x.values)) for x in qs}.items()))
-    return '&'.join([f'{key}={value}' for key, value in joined_values.items()])
+    sorted_dict = dict(sorted({key: ",".join(sorted(value)) for key, value in qs.items()}.items()))
+    return '&'.join([f'{key}={value}' for key, value in sorted_dict.items()])
 
 
 def request_hash(request: HttpRequest):
@@ -16,14 +16,11 @@ def request_hash(request: HttpRequest):
 
 
 def query_params_to_http_qs(qs: List[Tuple[str, str]]):
-    query_params: Dict[str, List[str]] = {}
+    query_params: QueryStrings = {}
     for param in qs:
         qp = query_params.get(param[0])
         if qp:
             qp.append(param[1])
         else:
             query_params[param[0]] = [param[1]]
-    query_string: List[QueryString] = []
-    for key, value in query_params.items():
-        query_string.append(QueryString(name=key, values=value))
-    return query_string
+    return query_params

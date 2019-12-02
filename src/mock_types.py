@@ -3,21 +3,19 @@ from typing import List, Dict, Any
 from pydantic import BaseModel, Schema
 
 
-class QueryString(BaseModel):
-    name: str
-    values: List[str]
+QueryStrings = Dict[str, List[str]]
 
 
 class HttpRequest(BaseModel):
     method: str
     path: str
-    query_string_parameters: List[QueryString] = Schema(None, alias='queryStringParameters')
+    query_string_parameters: QueryStrings = Schema(None, alias='queryStringParameters')
 
 
 class HttpResponse(BaseModel):
     status_code: int = Schema(200, alias='statusCode')
     headers: List[Dict[str, str]] = None
-    body: Any
+    body: Any = Schema('', description='Body that will be returned')
 
 
 class Times(BaseModel):
