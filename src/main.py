@@ -3,7 +3,7 @@ from fastapi import FastAPI
 
 import router
 
-app = FastAPI(title="MockServer API", description="Simple and fast mock server implemented in python", version="0.5.1",)
+app = FastAPI(title="MockServer API", description="Simple and fast mock server implemented in python", version="0.5.2",)
 
 app.include_router(router.router, tags=["MockServer"])
 
