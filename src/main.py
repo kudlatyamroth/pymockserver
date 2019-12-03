@@ -9,7 +9,7 @@ from starlette.requests import Request
 from starlette.responses import Response
 from starlette.status import HTTP_404_NOT_FOUND, HTTP_201_CREATED, HTTP_200_OK
 
-from mock_types import HttpRequest, CreateModel, MockedData
+from mock_types import HttpRequest, CreatePayload, MockedData
 from utils import request_hash, query_params_to_http_qs
 
 app = FastAPI()
@@ -19,7 +19,7 @@ mocks: Dict[str, MockedData] = {}
 
 
 @app.post('/mockserver', status_code=HTTP_201_CREATED)
-async def add_mock(body: CreateModel):
+async def add_mock(body: CreatePayload):
     req_hash = request_hash(body.httpRequest)
     mock = mocks.get(req_hash)
     if mock:

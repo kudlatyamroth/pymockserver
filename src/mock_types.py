@@ -25,7 +25,7 @@ class HttpResponse(BaseModel):
     delay: int = Schema(0, description='How much milliseconds wait until response')
 
 
-class CreateModel(BaseModel):
+class CreatePayload(BaseModel):
     httpRequest: HttpRequest
     httpResponse: HttpResponse
 
