@@ -39,7 +39,7 @@ async def get_mocks():
 async def delete_routes(http_request: HttpRequest):
     req_hash = request_hash(http_request)
     logger.info(f'[MockServer] Deleted mock for: {req_hash}')
-    return {'removed': mocks.pop(req_hash), 'mocked': mocks}
+    return {'removed': mocks.pop(req_hash, None), 'mocked': mocks}
 
 
 @app.delete('/mockserver/reset', status_code=HTTP_200_OK)
