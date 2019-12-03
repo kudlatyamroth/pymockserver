@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "PyMockServer"
+version = "0.5.1"
+description = "Simple MockServer implemented in python"
+authors = ["Kudlaty <kfuks2@gmail.com>"]
+license = "GPL-3.0"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+fastapi = "0.43.0"
+uvicorn = "^0.10.8"
+email-validator = "^1.0.5"
+
+[tool.poetry.dev-dependencies]
+black = "^19.10b0"
+flake8 = "^3.7.9"
+mypy = "^0.750"
+flake8-mypy = "^17.8.0"
+pre-commit = "^1.20.0"
+
+[tool.black]
+line-length = 120
+target-version = ['py37', 'py38']
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
