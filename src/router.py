@@ -18,6 +18,11 @@ mocks: Dict[str, MockedData] = {}
 
 @router.post('/mockserver', status_code=HTTP_201_CREATED)
 async def add_mock(body: CreatePayload):
+    """
+    Create route mock
+
+    If route is already mocked it will add it to queue.
+    """
     req_hash = request_hash(body.httpRequest)
     mock = mocks.get(req_hash)
     if mock:
@@ -30,11 +35,17 @@ async def add_mock(body: CreatePayload):
 
 @router.get('/mockserver', status_code=HTTP_200_OK)
 async def get_mocks():
+    """
+    Get all mocked routes
+    """
     return mocks
 
 
 @router.delete('/mockserver', status_code=HTTP_200_OK)
 async def delete_routes(http_request: HttpRequest):
+    """
+    Delete mock specified in request
+    """
     req_hash = request_hash(http_request)
     logger.info(f'[MockServer] Deleted mock for: {req_hash}')
     return {'removed': mocks.pop(req_hash, None), 'mocked': mocks}
@@ -42,6 +53,9 @@ async def delete_routes(http_request: HttpRequest):
 
 @router.delete('/mockserver/reset', status_code=HTTP_200_OK)
 async def clear_mocks():
+    """
+    Delete all mocked routes
+    """
     mocks.clear()
     logger.info('[MockServer] Clear all mocks')
     return {'status': 'ok'}

@@ -9,7 +9,7 @@ app = FastAPI(
     version="0.5.1",
 )
 
-app.include_router(router.router)
+app.include_router(router.router, tags=['MockServer'])
 
 
 if __name__ == '__main__':
