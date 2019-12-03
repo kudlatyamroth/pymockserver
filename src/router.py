@@ -16,7 +16,7 @@ router = APIRouter()
 mocks: Dict[str, MockedData] = {}
 
 
-@router.post('/mockserver', status_code=HTTP_201_CREATED)
+@router.post("/mockserver", status_code=HTTP_201_CREATED)
 async def add_mock(body: CreatePayload):
     """
     Create route mock
@@ -29,11 +29,11 @@ async def add_mock(body: CreatePayload):
         mock.httpResponse.append(body.httpResponse)
     else:
         mocks[req_hash] = MockedData(httpRequest=body.httpRequest, httpResponse=[body.httpResponse])
-    logger.info(f'[MockServer] Added new mock for: {req_hash}')
-    return {'status': 'ok'}
+    logger.info(f"[MockServer] Added new mock for: {req_hash}")
+    return {"status": "ok"}
 
 
-@router.get('/mockserver', status_code=HTTP_200_OK)
+@router.get("/mockserver", status_code=HTTP_200_OK)
 async def get_mocks():
     """
     Get all mocked routes
@@ -41,31 +41,31 @@ async def get_mocks():
     return mocks
 
 
-@router.delete('/mockserver', status_code=HTTP_200_OK)
+@router.delete("/mockserver", status_code=HTTP_200_OK)
 async def delete_routes(http_request: HttpRequest):
     """
     Delete mock specified in request
     """
     req_hash = request_hash(http_request)
-    logger.info(f'[MockServer] Deleted mock for: {req_hash}')
-    return {'removed': mocks.pop(req_hash, None), 'mocked': mocks}
+    logger.info(f"[MockServer] Deleted mock for: {req_hash}")
+    return {"removed": mocks.pop(req_hash, None), "mocked": mocks}
 
 
-@router.delete('/mockserver/reset', status_code=HTTP_200_OK)
+@router.delete("/mockserver/reset", status_code=HTTP_200_OK)
 async def clear_mocks():
     """
     Delete all mocked routes
     """
     mocks.clear()
-    logger.info('[MockServer] Clear all mocks')
-    return {'status': 'ok'}
+    logger.info("[MockServer] Clear all mocks")
+    return {"status": "ok"}
 
 
-@router.post('{url_path:path}', include_in_schema=False)
-@router.patch('{url_path:path}', include_in_schema=False)
-@router.get('{url_path:path}', include_in_schema=False)
-@router.put('{url_path:path}', include_in_schema=False)
-@router.delete('{url_path:path}', include_in_schema=False)
+@router.post("{url_path:path}", include_in_schema=False)
+@router.patch("{url_path:path}", include_in_schema=False)
+@router.get("{url_path:path}", include_in_schema=False)
+@router.put("{url_path:path}", include_in_schema=False)
+@router.delete("{url_path:path}", include_in_schema=False)
 async def mock_response(*, url_path: str = None, request: Request, response: Response):
     http_request = HttpRequest(
         method=request.method,
@@ -76,7 +76,7 @@ async def mock_response(*, url_path: str = None, request: Request, response: Res
     req_hash = request_hash(http_request)
     mock_list = mocks.get(req_hash)
     if mock_list is None:
-        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail='Not found')
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Not found")
 
     mock = mock_list.httpResponse[0]
     if 1 >= mock.remaining_times > -1:
@@ -92,7 +92,7 @@ async def mock_response(*, url_path: str = None, request: Request, response: Res
             response.headers[header] = value
 
     if mock.delay:
-        time.sleep(mock.delay/1000)
+        time.sleep(mock.delay / 1000)
 
     response.status_code = mock.status_code
     try:
