@@ -108,10 +108,10 @@ description = "FastAPI framework, high performance, easy to learn, fast to code,
 name = "fastapi"
 optional = false
 python-versions = ">=3.6"
-version = "0.43.0"
+version = "0.44.0"
 
 [package.dependencies]
-pydantic = "0.32.2"
+pydantic = ">=0.32.2,<2.0.0"
 starlette = "0.12.9"
 
 [package.extras]
@@ -292,12 +292,11 @@ description = "Data validation and settings management using python 3.6 type hin
 name = "pydantic"
 optional = false
 python-versions = ">=3.6"
-version = "0.32.2"
+version = "1.2"
 
 [package.extras]
 email = ["email-validator (>=1.0.3)"]
 typing_extensions = ["typing-extensions (>=3.7.2)"]
-ujson = ["ujson (>=1.35)"]
 
 [[package]]
 category = "dev"
@@ -427,7 +426,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pathlib2", "contextlib2", "unittest2"]
 
 [metadata]
-content-hash = "57072b6f2ab319905cd0eb14eb6e5eb207a88e0c9cd6c5e8965d225e12b4a70a"
+content-hash = "1e23e52f4dfa179228850cd8c77cfc43cdbcadeb03f489088de373e3fb8dd778"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -467,8 +466,8 @@ entrypoints = [
     {file = "entrypoints-0.3.tar.gz", hash = "sha256:c70dd71abe5a8c85e55e12c19bd91ccfeec11a6e99044204511f9ed547d48451"},
 ]
 fastapi = [
-    {file = "fastapi-0.43.0-py3-none-any.whl", hash = "sha256:5328c4126e81b7b6686f0c378791cfab7f2975825c391222af52ef49af71077a"},
-    {file = "fastapi-0.43.0.tar.gz", hash = "sha256:2b815d959e0e9caff5c64f99d5943f8f2366e43112ad42447ba70a7e79171e23"},
+    {file = "fastapi-0.44.0-py3-none-any.whl", hash = "sha256:a9c891473091c1f868235c25397cba71fa8b62fae8c8c3a5bc1ad008298e0990"},
+    {file = "fastapi-0.44.0.tar.gz", hash = "sha256:2e5a4c5727576492e3cc2d2d09c414e478f95f1566345d87efee957dd71fe44d"},
 ]
 flake8 = [
     {file = "flake8-3.7.9-py2.py3-none-any.whl", hash = "sha256:49356e766643ad15072a789a20915d3c91dc89fd313ccd71802303fd67e4deca"},
@@ -540,12 +539,20 @@ pycodestyle = [
     {file = "pycodestyle-2.5.0.tar.gz", hash = "sha256:e40a936c9a450ad81df37f549d676d127b1b66000a6c500caa2b085bc0ca976c"},
 ]
 pydantic = [
-    {file = "pydantic-0.32.2-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:18598557f0d9ab46173045910ed50458c4fb4d16153c23346b504d7a5b679f77"},
-    {file = "pydantic-0.32.2-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:ede2d65ae33788d4e26e12b330b4a32c53cb14131c65bca3a59f037c73f6ee7a"},
-    {file = "pydantic-0.32.2-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:bc6c6a78647d7a65a493e1107572d993f26a652c49183201e3c7d23924bf7311"},
-    {file = "pydantic-0.32.2-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:6f5eb88fe4c21380aa064b7d249763fc6306f0b001d7e7d52d80866d1afc9ed3"},
-    {file = "pydantic-0.32.2-py36.py37.py38-none-any.whl", hash = "sha256:e1a63b4e6bf8820833cb6fa239ffbe8eec57ccdd7d66359eff20e68a83c1deeb"},
-    {file = "pydantic-0.32.2.tar.gz", hash = "sha256:6a9335c968e13295430a208487e74d69fef40168b72dea8d975765d14e2da660"},
+    {file = "pydantic-1.2-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:67a3128260b268fba0e0e0ce8e8353022a68b223062ae218e8f0b8f74324d797"},
+    {file = "pydantic-1.2-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:de0624545e13a5eb09ab4fbd7076e4beced5aff2cd56097264c5f740f4b5fd39"},
+    {file = "pydantic-1.2-cp36-cp36m-manylinux2010_i686.whl", hash = "sha256:326ebef3ffed3ec20bd92a3d75c175333a3295e97b26f41cc2eb04ef76725aa2"},
+    {file = "pydantic-1.2-cp36-cp36m-manylinux2010_x86_64.whl", hash = "sha256:539fe3a2d231bf7be7bb50c2e8dd1bc61eff2f66ed1a26307eef6a4e5902f33a"},
+    {file = "pydantic-1.2-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:3adcf1cb80d7fe665d4a87e49b47285c9802762cce57fa85ce41a9d2a198f2b0"},
+    {file = "pydantic-1.2-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:29669232b21a0fe45ada7c183198129af8447e12d0b6e727098ce57c3c8df320"},
+    {file = "pydantic-1.2-cp37-cp37m-manylinux2010_i686.whl", hash = "sha256:1c2df10aca600a23e7310df7ee62bc8024e4bfc6a444bc4d38c7b095b0cc8f79"},
+    {file = "pydantic-1.2-cp37-cp37m-manylinux2010_x86_64.whl", hash = "sha256:fb6a5ddf762c594e6038af30fd3dc843f1238d60b5d477734fbc4b24cc1b87b9"},
+    {file = "pydantic-1.2-cp38-cp38-manylinux1_i686.whl", hash = "sha256:56f138161da9bde0e6d0301e7921856e89e02eefde22c8001e9aaa2335c26444"},
+    {file = "pydantic-1.2-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:c67c2239fab51a65d09e8859423f6b8ce5b4c76f0be4bf61ed22621774ef146a"},
+    {file = "pydantic-1.2-cp38-cp38-manylinux2010_i686.whl", hash = "sha256:45d2ea27997fff4cb5916a97705403edf82ecabe8d79ef31f6069b7f1391c3df"},
+    {file = "pydantic-1.2-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:320578dc67bd6854675a34ddda7a2519cf7132f08c0a376d43f5eb64bd052ca7"},
+    {file = "pydantic-1.2-py36.py37.py38-none-any.whl", hash = "sha256:4338e598ae11ae236aec596a975d9b88c9c40c9406193a53064c01682aa2a6d3"},
+    {file = "pydantic-1.2.tar.gz", hash = "sha256:da10b034750addbd95a328654d20364c479f4e2e26e0f72933204d61cbc8fa78"},
 ]
 pyflakes = [
     {file = "pyflakes-2.1.1-py2.py3-none-any.whl", hash = "sha256:17dbeb2e3f4d772725c777fabc446d5634d1038f234e77343108ce445ea69ce0"},
