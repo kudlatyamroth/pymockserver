@@ -26,7 +26,7 @@ async def add_mock(body: CreatePayload):
         mock.httpResponse.append(body.httpResponse)
     else:
         mocks[req_hash] = MockedData(httpRequest=body.httpRequest, httpResponse=[body.httpResponse])
-    logger.warning(f'[MockServer] Added new mock for: {req_hash}')
+    logger.info(f'[MockServer] Added new mock for: {req_hash}')
     return {'status': 'ok'}
 
 
@@ -38,14 +38,14 @@ async def get_mocks():
 @app.delete('/mockserver', status_code=HTTP_200_OK)
 async def delete_routes(http_request: HttpRequest):
     req_hash = request_hash(http_request)
-    logger.warning(f'[MockServer] Deleted mock for: {req_hash}')
+    logger.info(f'[MockServer] Deleted mock for: {req_hash}')
     return {'removed': mocks.pop(req_hash), 'mocked': mocks}
 
 
 @app.delete('/mockserver/reset', status_code=HTTP_200_OK)
 async def clear_mocks():
     mocks.clear()
-    logger.warning('[MockServer] Clear all mocks')
+    logger.info('[MockServer] Clear all mocks')
     return {'status': 'ok'}
 
 
