@@ -36,9 +36,10 @@ service:
   port: 80
 
 httpReadinessProbe:
-  enabled: true
+  path: /_meta/health
 
 httpLivenessProbe:
+  path: /_meta/health
   period: 30
 
 ingress:
