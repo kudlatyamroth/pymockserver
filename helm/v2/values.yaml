@@ -35,6 +35,12 @@ service:
   type: ClusterIP
   port: 80
 
+httpReadinessProbe:
+  enabled: true
+
+httpLivenessProbe:
+  period: 30
+
 ingress:
   enabled: false
   annotations: {}

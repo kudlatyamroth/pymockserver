@@ -36,18 +36,18 @@ spec:
           {{- if .Values.httpLivenessProbe }}
           livenessProbe:
             httpGet:
-              path: /_meta/live
+              path: {{ .Values.httpLivenessProbe.path }}
               port: http
-            initialDelaySeconds: 15
-            periodSeconds: 3
+            initialDelaySeconds: {{- if .Values.httpLivenessProbe.delay }}{{ .Values.httpLivenessProbe.delay }}{{- else -}}15{{- end }}
+            periodSeconds: {{- if .Values.httpLivenessProbe.period }}{{ .Values.httpLivenessProbe.period }}{{- else -}}3{{- end }}
           {{- end }}
           {{- if .Values.httpReadinessProbe }}
           readinessProbe:
             httpGet:
-              path: /_meta/health
+              path: {{ .Values.httpReadinessProbe.path }}
               port: http
-            initialDelaySeconds: 3
-            periodSeconds: 3
+            initialDelaySeconds: {{- if .Values.httpReadinessProbe.delay }}{{ .Values.httpReadinessProbe.delay }}{{- else -}}5{{- end }}
+            periodSeconds: {{- if .Values.httpReadinessProbe.period }}{{ .Values.httpReadinessProbe.period }}{{- else -}}3{{- end }}
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
