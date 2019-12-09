@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "PyMockServer"
+name = "pymockserver"
 version = "0.6.0"
 description = "Simple MockServer implemented in python"
 authors = ["Kudlaty <kfuks2@gmail.com>"]
@@ -17,6 +17,8 @@ flake8 = "^3.7.9"
 mypy = "^0.750"
 flake8-mypy = "^17.8.0"
 pre-commit = "^1.20.0"
+pytest = "^5.3.1"
+requests = "^2.22.0"
 
 [tool.black]
 line-length = 120

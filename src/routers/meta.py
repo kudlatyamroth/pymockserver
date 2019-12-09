@@ -6,7 +6,7 @@ router = APIRouter()
 
 
 @router.get("/_meta/health", status_code=HTTP_200_OK)
-async def health_check():
+def health_check():
     """
     Status response for readiness and liveness probe
     """

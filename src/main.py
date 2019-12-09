@@ -1,13 +1,12 @@
 import uvicorn
 from fastapi import FastAPI
 
-import router
-import meta_router
+from routers import meta, mockserver
 
 app = FastAPI(title="MockServer API", description="Simple and fast mock server implemented in python", version="0.6.0",)
 
-app.include_router(router.router, tags=["MockServer"])
-app.include_router(meta_router.router, tags=["Meta"])
+app.include_router(meta.router, tags=["Meta"])
+app.include_router(mockserver.router, tags=["MockServer"])
 
 
 if __name__ == "__main__":
