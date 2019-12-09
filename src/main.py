@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from routers import meta, mockserver
 
 
-__version__ = "0.7.0"
+__version__ = "0.7.1"
 app = FastAPI(
     title="MockServer API", description="Simple and fast mock server implemented in python", version=__version__,
 )
