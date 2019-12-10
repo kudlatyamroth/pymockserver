@@ -25,7 +25,7 @@ class HttpResponse(BaseModel):
     headers: Dict[str, str] = Field(
         None, description="Headers included in mock response", example={"x-user": "John Doe",},
     )
-    body: Any = Field("", description="Body that will be returned", example='"{"users":["John","Dave"]}"')
+    body: Any = Field("", description="Body that will be returned", example='{"users":["John","Dave"]}')
     remaining_times: int = Field(
         -1,
         title="remainingTimes",
@@ -41,6 +41,9 @@ class CreatePayload(BaseModel):
     httpResponse: HttpResponse
 
 
+MockList = List[HttpResponse]
+
+
 class MockedData(BaseModel):
     httpRequest: HttpRequest
-    httpResponse: List[HttpResponse]
+    httpResponse: MockList

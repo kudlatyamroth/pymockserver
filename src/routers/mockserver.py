@@ -1,19 +1,17 @@
 import json
 import time
-from typing import Dict
 
 from fastapi import APIRouter, HTTPException
 from starlette.requests import Request
 from starlette.responses import Response
 from starlette.status import HTTP_201_CREATED, HTTP_200_OK, HTTP_404_NOT_FOUND
 
-from logger import logger
-from mock_types import CreatePayload, MockedData, HttpRequest
+import mocks_manager
+from mock_types import CreatePayload, HttpRequest
 from utils import request_hash, query_params_to_http_qs
 
 
 router = APIRouter()
-mocks: Dict[str, MockedData] = {}
 
 
 @router.post("/mockserver", status_code=HTTP_201_CREATED)
@@ -24,12 +22,7 @@ async def add_mock(body: CreatePayload):
     If route is already mocked it will add it to queue.
     """
     req_hash = request_hash(body.httpRequest)
-    mock = mocks.get(req_hash)
-    if mock:
-        mock.httpResponse.append(body.httpResponse)
-    else:
-        mocks[req_hash] = MockedData(httpRequest=body.httpRequest, httpResponse=[body.httpResponse])
-    logger.info(f"[MockServer] Added new mock for: {req_hash}")
+    mocks_manager.add_mock(req_hash, body)
     return {"status": "ok"}
 
 
@@ -38,7 +31,7 @@ async def get_all_mocks():
     """
     Get all mocked routes
     """
-    return mocks
+    return mocks_manager.get_mocks()
 
 
 @router.delete("/mockserver", status_code=HTTP_200_OK)
@@ -47,8 +40,7 @@ async def delete_mock(http_request: HttpRequest):
     Delete mock specified in request
     """
     req_hash = request_hash(http_request)
-    logger.info(f"[MockServer] Deleted mock for: {req_hash}")
-    return {"removed": mocks.pop(req_hash, None), "mocked": mocks}
+    return {"removed": mocks_manager.delete_mock(req_hash), "mocked": mocks_manager.get_mocks()}
 
 
 @router.delete("/mockserver/reset", status_code=HTTP_200_OK)
@@ -56,8 +48,7 @@ async def clear_all_mocks():
     """
     Delete all mocked routes
     """
-    mocks.clear()
-    logger.info("[MockServer] Clear all mocks")
+    mocks_manager.purge_mocks()
     return {"status": "ok"}
 
 
@@ -74,18 +65,12 @@ async def mock_response(*, url_path: str = None, request: Request, response: Res
     )
 
     req_hash = request_hash(http_request)
-    mock_list = mocks.get(req_hash)
+    mock_list = mocks_manager.get_mock(req_hash)
     if mock_list is None:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Not found")
 
     mock = mock_list.httpResponse[0]
-    if 1 >= mock.remaining_times > -1:
-        if len(mock_list.httpResponse) > 1:
-            del mock_list.httpResponse[0]
-        else:
-            del mocks[req_hash]
-    if mock.remaining_times > 1:
-        mock.remaining_times -= 1
+    mocks_manager.decrease_remaining_times(mock_list.httpResponse, req_hash)
 
     if mock.headers:
         for header, value in mock.headers.items():
