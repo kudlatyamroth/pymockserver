@@ -34,7 +34,7 @@ async def add_mock(body: CreatePayload):
 
 
 @router.get("/mockserver", status_code=HTTP_200_OK)
-async def get_mocks():
+async def get_all_mocks():
     """
     Get all mocked routes
     """
@@ -42,7 +42,7 @@ async def get_mocks():
 
 
 @router.delete("/mockserver", status_code=HTTP_200_OK)
-async def delete_routes(http_request: HttpRequest):
+async def delete_mock(http_request: HttpRequest):
     """
     Delete mock specified in request
     """
@@ -52,7 +52,7 @@ async def delete_routes(http_request: HttpRequest):
 
 
 @router.delete("/mockserver/reset", status_code=HTTP_200_OK)
-async def clear_mocks():
+async def clear_all_mocks():
     """
     Delete all mocked routes
     """

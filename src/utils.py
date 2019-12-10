@@ -1,5 +1,8 @@
 from typing import Optional, List, Tuple
 
+from fastapi import FastAPI
+from fastapi.routing import APIRoute
+
 from mock_types import QueryStrings, HttpRequest
 
 
@@ -24,3 +27,13 @@ def query_params_to_http_qs(qs: List[Tuple[str, str]]):
         else:
             query_params[param[0]] = [param[1]]
     return query_params
+
+
+def use_route_names_as_operation_ids(app: FastAPI) -> None:
+    """
+    Simplify operation IDs so that generated API clients have simpler function
+    names.
+    """
+    for route in app.routes:
+        if isinstance(route, APIRoute):
+            route.operation_id = route.name
