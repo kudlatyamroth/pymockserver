@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "chart.name" . }}
+  name: {{ include "pymockserver.fullname" . }}
   labels:
-{{ include "chart.labels" . | indent 4 }}
+{{ include "pymockserver.labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "chart.name" . }}
+      app.kubernetes.io/name: {{ include "pymockserver.name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "chart.name" . }}
+        app.kubernetes.io/name: {{ include "pymockserver.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-      serviceAccountName: {{ template "chart.serviceAccountName" . }}
+      serviceAccountName: {{ template "pymockserver.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
