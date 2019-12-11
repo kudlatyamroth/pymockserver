@@ -6,7 +6,7 @@ from routers import meta, mockserver
 from utils import use_route_names_as_operation_ids
 
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 app = FastAPI(
     title="MockServer API", description="Simple and fast mock server implemented in python", version=__version__,
