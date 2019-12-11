@@ -84,11 +84,3 @@ async def mock_response(*, url_path: str = None, request: Request, response: Res
         return json.loads(mock.body)
     except (json.JSONDecodeError, TypeError):
         return mock.body
-
-
-@router.get("/_meta/health", status_code=HTTP_200_OK, tags=["meta"])
-async def health_check():
-    """
-    Status response for readiness and liveness probe
-    """
-    return {"status": "ok"}
