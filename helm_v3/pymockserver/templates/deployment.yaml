@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pymockserver.fullname" . }}
+  labels:
+    {{- include "pymockserver.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "pymockserver.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "pymockserver.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "pymockserver.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          {{- if .Values.httpLivenessProbe }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.httpLivenessProbe.path }}
+              port: http
+            initialDelaySeconds: {{ if .Values.httpLivenessProbe.delay }}{{ .Values.httpLivenessProbe.delay }}{{ else }}15{{- end }}
+            periodSeconds: {{ if .Values.httpLivenessProbe.period }}{{ .Values.httpLivenessProbe.period }}{{ else }}3{{- end }}
+          {{- end }}
+          {{- if .Values.httpReadinessProbe }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.httpReadinessProbe.path }}
+              port: http
+            initialDelaySeconds: {{ if .Values.httpReadinessProbe.delay }}{{ .Values.httpReadinessProbe.delay }}{{ else }}5{{- end }}
+            periodSeconds: {{ if .Values.httpReadinessProbe.period }}{{ .Values.httpReadinessProbe.period }}{{ else }}3{{- end }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
