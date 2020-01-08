@@ -8,20 +8,29 @@ class ReleaseProject:
     old_version: str
     new_version: str
 
-    def __init__(self, c, part):
+    def __init__(self, c, part, bump):
         self.c = c
         self.part = part
+        self.bump = bump
         self.project_name = "pymockserver"
         self.docker_project_name = f"kudlatyamroth/{self.project_name}"
 
     def run(self):
+        self.bump_version()
+        self.build_packages()
+        self.publish_packages()
+
+    def bump_version(self):
         self._fill_old_version()
-        self._bump_version()
+        if self.bump:
+            self._bump_version()
         self._fill_new_version()
 
+    def build_packages(self):
         self._build_helm_packages()
         self._build_docker_images()
 
+    def publish_packages(self):
         self._push_version_to_git()
         self._push_docker_images()
 
@@ -60,7 +69,7 @@ class ReleaseProject:
 
 
 @task
-def publish(c, version="minor"):
-    release = ReleaseProject(c, version)
+def publish(c, version="minor", bump=True):
+    release = ReleaseProject(c, version, bump)
     release.run()
     print(f"Released new version: {release.new_version}")
