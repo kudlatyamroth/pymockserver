@@ -243,6 +243,14 @@ testing = ["packaging", "importlib-resources"]
 
 [[package]]
 category = "dev"
+description = "Pythonic task execution"
+name = "invoke"
+optional = false
+python-versions = "*"
+version = "1.4.0"
+
+[[package]]
+category = "dev"
 description = "McCabe checker, plugin for flake8"
 name = "mccabe"
 optional = false
@@ -575,7 +583,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pathlib2", "contextlib2", "unittest2"]
 
 [metadata]
-content-hash = "9305f8a411ec886f52f0803af28ca74519804692aeeca860f7bab4a69aa3a8cc"
+content-hash = "ceb7b392fff32d4f0c54b22a620207268ef0306e841a12cc50fdf9d1f863875b"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -664,6 +672,11 @@ idna = [
 importlib-metadata = [
     {file = "importlib_metadata-1.2.0-py2.py3-none-any.whl", hash = "sha256:3a8b2dfd0a2c6a3636e7c016a7e54ae04b997d30e69d5eacdca7a6c2221a1402"},
     {file = "importlib_metadata-1.2.0.tar.gz", hash = "sha256:41e688146d000891f32b1669e8573c57e39e5060e7f5f647aa617cd9a9568278"},
+]
+invoke = [
+    {file = "invoke-1.4.0-py2-none-any.whl", hash = "sha256:4668a4a594a47f2da2f0672ec2f7b1566f809cebf10bcd95ce2de9ecf39b95d1"},
+    {file = "invoke-1.4.0-py3-none-any.whl", hash = "sha256:e04faba8ea7cdf6f5c912be42dcafd5c1074b7f2f306998992c4bfb40a9a690b"},
+    {file = "invoke-1.4.0.tar.gz", hash = "sha256:ae7b4513638bde9afcda0825e9535599637a3f65bd819a27098356027bb17c8a"},
 ]
 mccabe = [
     {file = "mccabe-0.6.1-py2.py3-none-any.whl", hash = "sha256:ab8a6258860da4b6677da4bd2fe5dc2c659cff31b3ee4f7f5d64e79735b80d42"},
