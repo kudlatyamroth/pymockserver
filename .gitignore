@@ -109,3 +109,6 @@ venv.bak/
 # helm packages
 helm_v2/pymockserver-*.tgz
 helm_v3/pymockserver-*.tgz
+
+# openapi file
+/openapi.json

@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+import json
+from pathlib import Path
+
 from invoke import task
 
 
@@ -27,12 +30,23 @@ class ReleaseProject:
         self._fill_new_version()
 
     def build_packages(self):
+        self._build_openapi()
         self._build_helm_packages()
         self._build_docker_images()
 
     def publish_packages(self):
         self._push_version_to_git()
         self._push_docker_images()
+
+    def _build_openapi(self):
+        import sys
+
+        sys.path.append(str(Path(__file__).parent.joinpath("src")))
+
+        from main import app
+
+        with open("openapi.json", "w") as openapi_file:
+            json.dump(app.openapi(), openapi_file, indent=2)
 
     def _push_docker_images(self):
         self.__run(f"docker push {self.docker_project_name}:{self.new_version}")
