@@ -40,7 +40,14 @@ class ReleaseProject:
     def publish_packages(self):
         # self._push_version_to_git()
         # self._push_docker_images()
+        self._push_node_client()
         pass
+
+    def _push_node_client(self):
+        client = "typescript-node"
+        client_dir = self.project_dir.joinpath("clients").joinpath(client)
+        with self.c.cd(str(client_dir)):
+            self.__run(f"npm publish")
 
     def _build_node_client(self):
         docker_user_password = self.project_dir.joinpath(".docker_user_passwd")
