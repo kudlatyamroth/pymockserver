@@ -40,14 +40,7 @@ class ReleaseProject:
     def publish_packages(self):
         # self._push_version_to_git()
         # self._push_docker_images()
-        self._push_node_client()
-        pass
-
-    def _push_node_client(self):
-        client = "typescript-node"
-        client_dir = self.project_dir.joinpath("clients").joinpath(client)
-        with self.c.cd(str(client_dir)):
-            self.__run(f"npm publish")
+        self.node_client.publish()
 
     def _push_docker_images(self):
         self.__run(f"docker push {self.docker_project_name}:{self.new_version}")

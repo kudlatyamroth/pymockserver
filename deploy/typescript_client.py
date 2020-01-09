@@ -10,55 +10,55 @@ from deploy.log import section
 @dataclass
 class TypescriptClient:
     project_dir: Path
-    client_dir: Path = Path(".")
     client: str = "typescript-node"
 
     def __post_init__(self):
         self.client_dir = self.project_dir.joinpath("clients").joinpath(self.client)
+        self.docker_credentials_file = self.project_dir.joinpath(".docker_user_passwd")
+        self.user = run("id -u", quite=True).strip()
+        self.group = run("id -g", quite=True).strip()
 
     def build(self):
         section(f"Start build {self.client} client")
         self._build_openapi()
+        self._write_credentials_to_file()
+        self._generate_node_client()
+        self._clean_generated_files()
         self._build_node_client()
 
-    def _push_node_client(self):
-        client = "typescript-node"
-        client_dir = self.project_dir.joinpath("clients").joinpath(client)
-        with context.cd(str(client_dir)):
+    def publish(self):
+        with context.cd(str(self.client_dir)):
             run(f"npm publish", msg="Publish npm package")
 
     def _build_node_client(self):
-        docker_user_password = self.project_dir.joinpath(".docker_user_passwd")
-        current_user = run("id -u", quite=True).strip()
-        current_group = run("id -g", quite=True).strip()
-        client = "typescript-node"
-        client_dir = self.project_dir.joinpath("clients").joinpath(client)
+        with context.cd(str(self.client_dir)):
+            run("npx tsc", msg=f"Build {self.client} client")
+            run("npx prettier --write src/** dist/**/*.js > /dev/null", msg=f"Prettier {self.client} sources")
 
-        with open(str(docker_user_password), "w") as file:
-            file.write(f"user:x:{current_user}:{current_group}:::/bin/bash")
-
-        run(
-            f"docker run --rm -u {current_user}:{current_group} -v '{self.project_dir}:/local' \
-            openapitools/openapi-generator-cli:latest generate -g {client} \
-            -i /local/openapi.json -o /local/clients/{client}/src \
-            --additional-properties='supportsES6=true' --skip-validate-spec",
-            msg=f"Generate {self.client}",
-        )
-
+    def _clean_generated_files(self):
         files_to_delete = (
-            docker_user_password,
-            client_dir.joinpath("src/.gitignore"),
-            client_dir.joinpath("src/git_push.sh"),
-            client_dir.joinpath("src/.openapi-generator"),
-            client_dir.joinpath("src/.openapi-generator-ignore"),
+            self.docker_credentials_file,
+            self.client_dir.joinpath("src/.gitignore"),
+            self.client_dir.joinpath("src/git_push.sh"),
+            self.client_dir.joinpath("src/.openapi-generator"),
+            self.client_dir.joinpath("src/.openapi-generator-ignore"),
         )
 
         for file in files_to_delete:
             file.unlink() if file.is_file() else shutil.rmtree(file)
 
-        with context.cd(str(client_dir)):
-            run("npx tsc", msg=f"Build {self.client} client")
-            run("npx prettier --write src/** dist/**/*.js > /dev/null", msg=f"Prettier {self.client} sources")
+    def _generate_node_client(self):
+        run(
+            f"docker run --rm -u {self.user}:{self.group} -v '{self.project_dir}:/local' \
+            openapitools/openapi-generator-cli:latest generate -g {self.client} \
+            -i /local/openapi.json -o /local/clients/{self.client}/src \
+            --additional-properties='supportsES6=true' --skip-validate-spec",
+            msg=f"Generate {self.client}",
+        )
+
+    def _write_credentials_to_file(self):
+        with open(str(self.docker_credentials_file), "w") as file:
+            file.write(f"user:x:{self.user}:{self.group}:::/bin/bash")
 
     def _build_openapi(self):
         import sys
