@@ -1,0 +1,45 @@
+{
+  "name": "pymockserver-client",
+  "version": "1.2.0",
+  "description": "PyMockServer client",
+  "repository": "kudlatyamroth/pymockserver-client",
+  "main": "dist/api.js",
+  "typings": "dist/api.d.ts",
+  "author": "Karol Fuksiewicz",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "@types/bluebird": "^3.5.29",
+    "@types/request": "^2.48.3",
+    "bluebird": "^3.7.2",
+    "request": "^2.88.0"
+  },
+  "devDependencies": {
+    "@types/node": "12.12.16",
+    "@types/jest": "^24.0.23",
+    "jest": "^24.9.0",
+    "prettier": "^1.19.1",
+    "ts-jest": "^24.2.0",
+    "typescript": "^3.7.3"
+  },
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "./tsconfig.json",
+        "diagnostics": false
+      }
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "reporters": [
+      "default"
+    ],
+    "testEnvironment": "node",
+    "testRegex": "/test/.*.spec.ts",
+    "transform": {
+      "^.+\\.(ts)$": "ts-jest"
+    },
+    "verbose": true
+  }
+}

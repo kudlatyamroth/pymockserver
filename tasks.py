@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import json
+import shutil
 from pathlib import Path
 
 from invoke import task
@@ -17,6 +18,7 @@ class ReleaseProject:
         self.bump = bump
         self.project_name = "pymockserver"
         self.docker_project_name = f"kudlatyamroth/{self.project_name}"
+        self.project_dir = Path(__file__).parent
 
     def run(self):
         self.bump_version()
@@ -31,17 +33,51 @@ class ReleaseProject:
 
     def build_packages(self):
         self._build_openapi()
+        self._build_node_client()
         self._build_helm_packages()
         self._build_docker_images()
 
     def publish_packages(self):
-        self._push_version_to_git()
-        self._push_docker_images()
+        # self._push_version_to_git()
+        # self._push_docker_images()
+        pass
+
+    def _build_node_client(self):
+        docker_user_password = self.project_dir.joinpath(".docker_user_passwd")
+        current_user = self.__run("id -u").strip()
+        current_group = self.__run("id -g").strip()
+        client = "typescript-node"
+        client_dir = self.project_dir.joinpath("clients").joinpath(client)
+
+        with open(docker_user_password, "w") as file:
+            file.write(f"user:x:{current_user}:{current_group}:::/bin/bash")
+
+        self.__run(
+            f"docker run --rm -u {current_user}:{current_group} -v '{self.project_dir}:/local' \
+            openapitools/openapi-generator-cli:latest generate -g {client} \
+            -i /local/openapi.json -o /local/clients/{client}/src \
+            --additional-properties='supportsES6=true' --skip-validate-spec"
+        )
+
+        files_to_delete = (
+            docker_user_password,
+            client_dir.joinpath("src/.gitignore"),
+            client_dir.joinpath("src/git_push.sh"),
+            client_dir.joinpath("src/.openapi-generator"),
+            client_dir.joinpath("src/.openapi-generator-ignore"),
+        )
+
+        for file in files_to_delete:
+            file.unlink() if file.is_file() else shutil.rmtree(file)
+
+        with self.c.cd(str(client_dir)):
+            self.__run("npx tsc")
+            self.__run("npx prettier --write src/** dist/**/*.js > /dev/null")
 
     def _build_openapi(self):
         import sys
 
-        sys.path.append(str(Path(__file__).parent.joinpath("src")))
+        sys.path.append(str(self.project_dir.joinpath("src")))
 
         from main import app
 
