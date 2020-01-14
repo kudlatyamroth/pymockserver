@@ -14,8 +14,8 @@ class ReleaseProject:
     old_version: str
     new_version: str
     _node_client: TypescriptClient = None
-    _helm_package: HelmPackage
-    _docker_image: DockerImage
+    _helm_package: HelmPackage = None
+    _docker_image: DockerImage = None
 
     def __init__(self, c, part, bump):
         self.c = c
