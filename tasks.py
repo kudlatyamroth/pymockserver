@@ -78,7 +78,7 @@ class ReleaseProject:
         self.old_version = self._get_project_version()
 
     def _get_project_version(self):
-        return self.__run('poetry version | cut -d" " -f2')
+        return self.__run('poetry version | cut -d" " -f2').strip()
 
     def __run(self, command, hide=True, warn=True):
         output = self.c.run(command, hide=hide, warn=warn, pty=True)
