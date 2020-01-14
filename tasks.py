@@ -3,6 +3,7 @@ from pathlib import Path
 
 from invoke import task
 
+from deploy.helm_package import HelmPackage
 from deploy.typescript_client import TypescriptClient
 
 
@@ -12,6 +13,7 @@ class ReleaseProject:
     old_version: str
     new_version: str
     _node_client: TypescriptClient = None
+    _helm_package: HelmPackage
 
     def __init__(self, c, part, bump):
         self.c = c
@@ -34,13 +36,21 @@ class ReleaseProject:
 
     def build_packages(self):
         self.node_client.build()
-        self._build_helm_packages()
+        self.helm_package.build()
         self._build_docker_images()
 
     def publish_packages(self):
         # self._push_version_to_git()
         # self._push_docker_images()
         self.node_client.publish()
+
+    @property
+    def helm_package(self):
+        if self._helm_package is None:
+            self._helm_package = HelmPackage(
+                project_dir=self.project_dir, new_version=self.new_version, project_name=self.project_name
+            )
+        return self._helm_package
 
     @property
     def node_client(self):
@@ -58,12 +68,6 @@ class ReleaseProject:
 
     def _push_version_to_git(self):
         self.__run("git push --follow-tags")
-
-    def _build_helm_packages(self):
-        with self.c.cd("helm_v3"):
-            self.__run(f"helm3 package {self.project_name}")
-        with self.c.cd("helm_v2"):
-            self.__run(f"helm3 package {self.project_name}")
 
     def _bump_version(self):
         self.__run(f"bump2version {self.part}", warn=False)
