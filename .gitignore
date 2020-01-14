@@ -107,8 +107,7 @@ venv.bak/
 .mypy_cache/
 
 # helm packages
-helm_v2/pymockserver-*.tgz
-helm_v3/pymockserver-*.tgz
+helm_v[2-3]/helm_v[2-3]-pymockserver-*.tgz
 
 # openapi file
 /openapi.json

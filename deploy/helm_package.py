@@ -14,9 +14,11 @@ class HelmPackage:
     def __post_init__(self):
         self.helm_v2_dir = self.project_dir.joinpath("helm_v2")
         self.helm_v3_dir = self.project_dir.joinpath("helm_v3")
-        self.package_name = f"{self.project_name}-{self.new_version}.tgz"
-        self.helm_v2_package = self.helm_v2_dir.joinpath(self.package_name)
-        self.helm_v3_package = self.helm_v3_dir.joinpath(self.package_name)
+        self.build_name = f"{self.project_name}-{self.new_version}.tgz"
+        self._build_helm_v2_package_name = self.helm_v2_dir.joinpath(self.build_name)
+        self._build_helm_v3_package_name = self.helm_v3_dir.joinpath(self.build_name)
+        self._helm_v2_package = self.helm_v2_dir.joinpath(f"helm_v2-{self.build_name}")
+        self._helm_v3_package = self.helm_v3_dir.joinpath(f"helm_v3-{self.build_name}")
 
     def build(self):
         log.section(f"Build helm packages")
@@ -26,7 +28,9 @@ class HelmPackage:
     def _build_helm_v2_package(self):
         with context.cd(str(self.helm_v2_dir)):
             run(f"helm package {self.project_name}", msg=f"Build helm v2 package")
+        self._build_helm_v2_package_name.rename(self._helm_v2_package)
 
     def _build_helm_v3_package(self):
         with context.cd(str(self.helm_v3_dir)):
             run(f"helm3 package {self.project_name}", msg=f"Build helm v3 package")
+        self._build_helm_v2_package_name.rename(self._helm_v3_package)
