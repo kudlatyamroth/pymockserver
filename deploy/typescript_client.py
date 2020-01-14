@@ -3,13 +3,16 @@ import shutil
 from dataclasses import dataclass
 from pathlib import Path
 
+from git import Repo
+
 from deploy.local_invoke import context, run
-from deploy.log import section
+from deploy import log
 
 
 @dataclass
 class TypescriptClient:
     project_dir: Path
+    new_version: str
     client: str = "typescript-node"
 
     def __post_init__(self):
@@ -17,18 +20,33 @@ class TypescriptClient:
         self.docker_credentials_file = self.project_dir.joinpath(".docker_user_passwd")
         self.user = run("id -u", quite=True).strip()
         self.group = run("id -g", quite=True).strip()
+        self.repo = Repo(self.project_dir)
 
     def build(self):
-        section(f"Start build {self.client} client")
+        log.section(f"Start build {self.client} client")
         self._build_openapi()
         self._write_credentials_to_file()
         self._generate_node_client()
         self._clean_generated_files()
         self._build_node_client()
+        self._commit_generated_client()
 
     def publish(self):
         with context.cd(str(self.client_dir)):
             run(f"npm publish", msg="Publish npm package")
+
+    def _commit_generated_client(self):
+        if not self.repo.is_dirty():
+            return
+
+        try:
+            log.info("Adding files for commit")
+            self.repo.git.add(".")
+            self.repo.index.commit(f"generated typescript client version: {self.new_version}")
+            log.status("Adding commit with generated client")
+        except Exception as e:
+            log.status("Adding commit with generated client", failed=True)
+            raise Exception from e
 
     def _build_node_client(self):
         with context.cd(str(self.client_dir)):
