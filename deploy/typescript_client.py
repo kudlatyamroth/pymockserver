@@ -37,6 +37,7 @@ class TypescriptClient:
 
     def _commit_generated_client(self):
         if not self.repo.is_dirty():
+            log.debug("Nothing to commit")
             return
 
         try:
@@ -54,6 +55,7 @@ class TypescriptClient:
             run("npx prettier --write src/** dist/**/*.js > /dev/null", msg=f"Prettier {self.client} sources")
 
     def _clean_generated_files(self):
+        log.info("Clean obsolete files")
         files_to_delete = (
             self.docker_credentials_file,
             self.client_dir.joinpath("src/.gitignore"),
@@ -75,10 +77,12 @@ class TypescriptClient:
         )
 
     def _write_credentials_to_file(self):
+        log.info("Save docker credentials")
         with open(str(self.docker_credentials_file), "w") as file:
             file.write(f"user:x:{self.user}:{self.group}:::/bin/bash")
 
     def _build_openapi(self):
+        log.info("Save openApi file")
         import sys
 
         sys.path.append(str(self.project_dir.joinpath("src")))
