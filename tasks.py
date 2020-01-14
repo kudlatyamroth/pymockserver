@@ -3,6 +3,7 @@ from pathlib import Path
 
 from invoke import task
 
+from deploy.docker_image import DockerImage
 from deploy.helm_package import HelmPackage
 from deploy.typescript_client import TypescriptClient
 
@@ -14,19 +15,19 @@ class ReleaseProject:
     new_version: str
     _node_client: TypescriptClient = None
     _helm_package: HelmPackage
+    _docker_image: DockerImage
 
     def __init__(self, c, part, bump):
         self.c = c
         self.part = part
         self.bump = bump
         self.project_name = "pymockserver"
-        self.docker_project_name = f"kudlatyamroth/{self.project_name}"
         self.project_dir = Path(__file__).parent
 
     def run(self):
         self.bump_version()
         self.build_packages()
-        # self.publish_packages()
+        self.publish_packages()
 
     def bump_version(self):
         self._fill_old_version()
@@ -37,12 +38,18 @@ class ReleaseProject:
     def build_packages(self):
         self.node_client.build()
         self.helm_package.build()
-        self._build_docker_images()
+        self.docker_image.build()
 
     def publish_packages(self):
-        # self._push_version_to_git()
-        # self._push_docker_images()
+        self._push_version_to_git()
+        self.docker_image.publish()
         self.node_client.publish()
+
+    @property
+    def docker_image(self):
+        if self._docker_image is None:
+            self._docker_image = DockerImage(new_version=self.new_version, project_name=self.project_name)
+        return self._docker_image
 
     @property
     def helm_package(self):
@@ -57,14 +64,6 @@ class ReleaseProject:
         if self._node_client is None:
             self._node_client = TypescriptClient(project_dir=self.project_dir, new_version=self.new_version)
         return self._node_client
-
-    def _push_docker_images(self):
-        self.__run(f"docker push {self.docker_project_name}:{self.new_version}")
-        self.__run(f"docker push {self.docker_project_name}:latest")
-
-    def _build_docker_images(self):
-        self.__run(f"docker build -t {self.docker_project_name}:{self.new_version} .")
-        self.__run(f"docker build -t {self.docker_project_name}:latest .")
 
     def _push_version_to_git(self):
         self.__run("git push --follow-tags")
