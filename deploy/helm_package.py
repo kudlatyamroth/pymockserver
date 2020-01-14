@@ -33,4 +33,4 @@ class HelmPackage:
     def _build_helm_v3_package(self):
         with context.cd(str(self.helm_v3_dir)):
             run(f"helm3 package {self.project_name}", msg=f"Build helm v3 package")
-        self._build_helm_v2_package_name.rename(self._helm_v3_package)
+        self._build_helm_v3_package_name.rename(self._helm_v3_package)
