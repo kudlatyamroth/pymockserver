@@ -85,7 +85,7 @@ class TypescriptClient:
         log.info("Save openApi file")
         import sys
 
-        sys.path.append(str(self.project_dir.joinpath("src")))
+        sys.path.append(str(self.project_dir.joinpath("pymockserver")))
 
         from main import app
 
