@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 
 import pytest
+from mergedeep import merge
 from starlette.testclient import TestClient
 
 base_path = Path(__file__).parents[1].joinpath("pymockserver")
@@ -27,3 +28,33 @@ def client(app):
 def cleanup(app):
     yield
     mocks_manager.mocks = {}
+
+
+@pytest.fixture(scope="function")
+def base_data(app):
+    json_data = {
+        "httpRequest": {"method": "GET", "path": "/users",},
+        "httpResponse": {"statusCode": 200, "remainingTimes": -1, "delay": 0,},
+    }
+
+    def fill_data(data):
+        return merge({}, json_data, data)
+
+    return fill_data
+
+
+@pytest.fixture(scope="function")
+def create_mock(client, base_data):
+    def add_mock(data):
+        mock_data = base_data(data)
+        add_response = client.post("/mockserver", json=mock_data)
+
+        assert add_response.status_code == 201
+        assert add_response.json() == {"status": "ok"}
+
+        return {
+            "data": mock_data,
+            "response": add_response,
+        }
+
+    return add_mock
