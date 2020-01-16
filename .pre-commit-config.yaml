@@ -5,7 +5,7 @@ repos:
         name: black
         stages: [commit]
         language: system
-        entry: poetry run black src/
+        entry: poetry run black pymockserver/
         types: [python]
 
       - id: flake8
