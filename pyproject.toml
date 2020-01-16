@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pymockserver"
-version = "1.3.6"
+version = "1.4.0"
 description = "Simple MockServer implemented in python"
 authors = ["Kudlaty <kfuks2@gmail.com>"]
 license = "GPL-3.0"
