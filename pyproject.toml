@@ -10,6 +10,7 @@ python = "^3.7"
 fastapi = "^0.46.0"
 uvicorn = "^0.11.1"
 email-validator = "^1.0.5"
+diskcache = "^4.1.0"
 
 [tool.poetry.dev-dependencies]
 black = "^19.10b0"

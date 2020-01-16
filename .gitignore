@@ -111,3 +111,6 @@ helm_v[2-3]/helm_v[2-3]-pymockserver-*.tgz
 
 # openapi file
 /openapi.json
+
+# cache db
+/pymockserver/cache.db*
