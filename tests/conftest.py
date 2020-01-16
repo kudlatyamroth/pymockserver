@@ -8,7 +8,7 @@ from starlette.testclient import TestClient
 base_path = Path(__file__).parents[1].joinpath("pymockserver")
 sys.path.append(str(base_path))
 
-import mocks_manager  # noqa
+import database  # noqa
 
 
 @pytest.fixture(scope="session")
@@ -27,7 +27,7 @@ def client(app):
 @pytest.fixture(scope="function")
 def cleanup(app):
     yield
-    mocks_manager.mocks = {}
+    database.db.clear()
 
 
 @pytest.fixture(scope="function")
