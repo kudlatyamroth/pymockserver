@@ -65,22 +65,20 @@ async def mock_response(*, url_path: str = None, request: Request, response: Res
     )
 
     req_hash = request_hash(http_request)
-    mock_list = mocks_manager.get_mock(req_hash)
-    if mock_list is None:
+    mock = mocks_manager.get_mock(req_hash)
+    if mock is None:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Not found")
 
-    mock = mock_list.httpResponse[0]
-    mocks_manager.decrease_remaining_times(mock_list.httpResponse, req_hash)
-
-    if mock.headers:
-        for header, value in mock.headers.items():
+    mocked_response = mocks_manager.decrease_remaining_times(mock, req_hash)
+    if mocked_response.headers:
+        for header, value in mocked_response.headers.items():
             response.headers[header] = value
 
-    if mock.delay:
-        time.sleep(mock.delay / 1000)
+    if mocked_response.delay:
+        time.sleep(mocked_response.delay / 1000)
 
-    response.status_code = mock.status_code
+    response.status_code = mocked_response.status_code
     try:
-        return json.loads(mock.body)
+        return json.loads(mocked_response.body)
     except (json.JSONDecodeError, TypeError):
-        return mock.body
+        return mocked_response.body
