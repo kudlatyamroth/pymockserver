@@ -9,7 +9,7 @@ class Db:
     @property
     def cache(self):
         if not self._cache:
-            self._cache = Cache(str(Path(__file__).parent))
+            self._cache = Cache(str(Path(__file__).parent), disk_pickle_protocol=4)
         return self._cache
 
     def connect(self):
