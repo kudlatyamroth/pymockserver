@@ -5,11 +5,16 @@ from diskcache import Cache
 
 class Db:
     _cache: Cache = None
+    _dick_settings = {
+        "disk_pickle_protocol": 4,
+        "cull_limit": 0,
+        "eviction_policy": "none",
+    }
 
     @property
     def cache(self):
         if not self._cache:
-            self._cache = Cache(str(Path(__file__).parent), disk_pickle_protocol=4)
+            self._cache = Cache(str(Path(__file__).parent), **self._dick_settings)
         return self._cache
 
     def connect(self):
