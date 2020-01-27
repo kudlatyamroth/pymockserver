@@ -1,4 +1,4 @@
-from typing import List, Dict, Union
+from typing import List, Dict, Any
 
 from pydantic import BaseModel, Field
 
@@ -9,6 +9,7 @@ QueryStrings = Dict[str, List[str]]
 class HttpRequest(BaseModel):
     method: str = Field("GET", description="Http method", example="GET")
     path: str = Field(..., description="Url path", example="/users")
+    body: Any = Field(None, description="Body that must be send", example="nice data")
     query_string_parameters: QueryStrings = Field(
         None,
         title="queryStringParameters",
@@ -31,9 +32,7 @@ class HttpResponse(BaseModel):
     headers: Dict[str, str] = Field(
         None, description="Headers included in mock response", example={"x-user": "John Doe",},
     )
-    body: Union[bool, str, int, Dict, List, None] = Field(
-        "", description="Body that will be returned", example='{"users":["John","Dave"]}'
-    )
+    body: Any = Field("", description="Body that will be returned", example='{"users":["John","Dave"]}')
     remaining_times: int = Field(
         -1,
         title="remainingTimes",

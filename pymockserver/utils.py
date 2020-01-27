@@ -15,7 +15,8 @@ def join_query_string(qs: Optional[QueryStrings]):
 
 def request_hash(request: HttpRequest):
     qs = join_query_string(request.query_string_parameters)
-    return f"{request.method}:{request.path}?{qs}"
+    body = f":BODY:{request.body}" if request.body else ""
+    return f"{request.method}:{request.path}?{qs}{body}"
 
 
 def query_params_to_http_qs(qs: List[Tuple[str, str]]):

@@ -58,9 +58,15 @@ async def clear_all_mocks():
 @router.put("{url_path:path}", include_in_schema=False)
 @router.delete("{url_path:path}", include_in_schema=False)
 async def mock_response(*, url_path: str = None, request: Request, response: Response):
+    try:
+        request_body = await request.json()
+    except (json.JSONDecodeError, TypeError):
+        request_body = (await request.body()).decode("utf-8")
+
     http_request = HttpRequest(
         method=request.method,
         path=url_path,
+        body=request_body,
         queryStringParameters=query_params_to_http_qs(request.query_params.multi_items()),
     )
 
