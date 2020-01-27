@@ -5,3 +5,6 @@ COPY pymockserver /app
 RUN pip install --no-cache-dir email-validator==1.0.5 diskcache==4.1.0
 
 EXPOSE 80
+
+ENV WORKERS_PER_CORE 1
+ENV WEB_CONCURRENCY 4
