@@ -27,6 +27,9 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - name: sqlite-storage
+              mountPath: /data/sqlite
           ports:
             - name: http
               containerPort: 80
@@ -49,6 +52,14 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      {{- if .Values.memoryMediaLimit }}
+      volumes:
+        - name: sqlite-storage
+          emptyDir:
+            medium: "Memory"
+            {{- if .Values.memoryMediaLimit }}
+            sizeLimit: {{ .Values.memoryMediaLimit }}
+            {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
