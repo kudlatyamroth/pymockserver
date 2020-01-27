@@ -22,8 +22,9 @@ def test_minimal_request_to_add_mock(client):
 @pytest.mark.usefixtures("cleanup")
 def test_largest_request_to_add_mock(client):
     http_request = {
-        "method": "GET",
+        "method": "POST",
         "path": "/users",
+        "body": "test",
         "queryStringParameters": {"name": ["John"],},
     }
     http_response = {
@@ -38,7 +39,7 @@ def test_largest_request_to_add_mock(client):
     assert add_response.status_code == 201
     assert add_response.json() == {"status": "ok"}
 
-    mock_response = client.get(http_request.get("path"), params={"name": "John"})
+    mock_response = client.post(http_request.get("path"), params={"name": "John"}, data="test")
     assert mock_response.status_code == 201
     assert mock_response.json() == http_response.get("body")
 
