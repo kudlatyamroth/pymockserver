@@ -4,7 +4,7 @@ from diskcache import Cache
 
 
 DEFAULT_DB_DIR = "/data/sqlite"
-DB_DIR = DEFAULT_DB_DIR if Path(DEFAULT_DB_DIR).is_dir() else ""
+DB_DIR = DEFAULT_DB_DIR if Path(DEFAULT_DB_DIR).is_dir() else None
 
 
 class Db:
@@ -19,7 +19,6 @@ class Db:
     def cache(self):
         if self._cache is None:
             self._cache = Cache(DB_DIR, **self._dick_settings)
-        print(self._cache)
         return self._cache
 
     def connect(self):
