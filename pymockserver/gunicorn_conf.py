@@ -27,8 +27,8 @@ loglevel = use_loglevel
 workers = web_concurrency
 bind = use_bind
 keepalive = 300
-max_requests = 30
-max_requests_jitter = 15
+max_requests = 100
+max_requests_jitter = 100
 errorlog = "-"
 
 # For debugging and testing
