@@ -1,4 +1,6 @@
-from typing import Optional, List, Tuple
+import hashlib
+import json
+from typing import List, Tuple
 
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
@@ -6,20 +8,16 @@ from fastapi.routing import APIRoute
 from mock_types import QueryStrings, HttpRequest
 
 
-def join_query_string(qs: Optional[QueryStrings]):
-    if qs is None:
-        return ""
-    sorted_dict = dict(sorted({key: ",".join(sorted(value)) for key, value in qs.items()}.items()))
-    return "&".join([f"{key}={value}" for key, value in sorted_dict.items()])
+def dump_request(request: HttpRequest) -> str:
+    return json.dumps(request.dict(), indent=2)
 
 
-def request_hash(request: HttpRequest):
-    qs = join_query_string(request.query_string_parameters)
-    body = f":BODY:{request.body}" if request.body else ""
-    return f"{request.method}:{request.path}?{qs}{body}"
+def request_hash(request: HttpRequest) -> str:
+    request.body = request.body or ""
+    return hashlib.md5(json.dumps(request.dict(), sort_keys=True).encode("utf-8")).hexdigest()
 
 
-def query_params_to_http_qs(qs: List[Tuple[str, str]]):
+def query_params_to_http_qs(qs: List[Tuple[str, str]]) -> QueryStrings:
     query_params: QueryStrings = {}
     for param in qs:
         qp = query_params.get(param[0])

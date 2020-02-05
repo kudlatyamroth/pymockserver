@@ -9,9 +9,9 @@ QueryStrings = Dict[str, List[str]]
 class HttpRequest(BaseModel):
     method: str = Field("GET", description="Http method", example="GET")
     path: str = Field(..., description="Url path", example="/users")
-    body: Any = Field(None, description="Body that must be send", example="nice data")
+    body: Any = Field("", description="Body that must be send", example="nice data")
     query_string_parameters: QueryStrings = Field(
-        None,
+        {},
         title="queryStringParameters",
         alias="queryStringParameters",
         description="Query string parameters",

@@ -8,21 +8,20 @@ from starlette.status import HTTP_201_CREATED, HTTP_200_OK, HTTP_404_NOT_FOUND
 
 import mocks_manager
 from mock_types import CreatePayload, HttpRequest
-from utils import request_hash, query_params_to_http_qs
+from utils import query_params_to_http_qs
 
 
 router = APIRouter()
 
 
 @router.post("/mockserver", status_code=HTTP_201_CREATED)
-async def add_mock(body: CreatePayload):
+async def add_mock(payload: CreatePayload):
     """
     Create route mock
 
     If route is already mocked it will add it to queue.
     """
-    req_hash = request_hash(body.httpRequest)
-    mocks_manager.add_mock(req_hash, body)
+    mocks_manager.add_mock(payload)
     return {"status": "ok"}
 
 
@@ -39,8 +38,7 @@ async def delete_mock(http_request: HttpRequest):
     """
     Delete mock specified in request
     """
-    req_hash = request_hash(http_request)
-    return {"removed": mocks_manager.delete_mock(req_hash), "mocked": mocks_manager.get_mocks()}
+    return {"removed": mocks_manager.delete_mock(http_request), "mocked": mocks_manager.get_mocks()}
 
 
 @router.delete("/mockserver/reset", status_code=HTTP_200_OK)
@@ -70,12 +68,11 @@ async def mock_response(*, url_path: str = None, request: Request, response: Res
         queryStringParameters=query_params_to_http_qs(request.query_params.multi_items()),
     )
 
-    req_hash = request_hash(http_request)
-    mock = mocks_manager.get_mock(req_hash)
+    mock = mocks_manager.get_mock(http_request)
     if mock is None:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Not found")
 
-    mocked_response = mocks_manager.decrease_remaining_times(mock, req_hash)
+    mocked_response = mocks_manager.decrease_remaining_times(mock, http_request)
     if mocked_response.headers:
         for header, value in mocked_response.headers.items():
             response.headers[header] = value
