@@ -54,7 +54,7 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-memoryMediaLimit: 256Mi
+# memoryMediaLimit: 256Mi
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
