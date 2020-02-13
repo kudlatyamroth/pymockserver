@@ -54,7 +54,6 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-      {{- if .Values.memoryMediaLimit }}
       volumes:
         - name: sqlite-storage
           emptyDir:
