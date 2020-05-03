@@ -17,9 +17,8 @@ class ReleaseProject:
     _helm_package: HelmPackage = None
     _docker_image: DockerImage = None
 
-    def __init__(self, c, part, bump):
+    def __init__(self, c, bump):
         self.c = c
-        self.part = part
         self.bump = bump
         self.project_name = "pymockserver"
         self.project_dir = Path(__file__).parent
@@ -69,7 +68,7 @@ class ReleaseProject:
         self.__run("git push --follow-tags")
 
     def _bump_version(self):
-        self.__run(f"bump2version {self.part}", warn=False)
+        self.__run(f"cz bump -ch", warn=False)
 
     def _fill_new_version(self):
         self.new_version = self._get_project_version()
@@ -86,7 +85,7 @@ class ReleaseProject:
 
 
 @task
-def publish(c, version="minor", bump=True):
-    release = ReleaseProject(c, version, bump)
+def publish(c, bump=True):
+    release = ReleaseProject(c, bump)
     release.run()
     print(f"Released new version: {release.new_version}")
