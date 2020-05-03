@@ -5,6 +5,19 @@ description = "Simple MockServer implemented in python"
 authors = ["Kudlaty <kfuks2@gmail.com>"]
 license = "GPL-3.0"
 
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "1.5.5"
+version_files = [
+    "pyproject.toml:version",
+    "pymockserver/main.py:__version__",
+    "helm_v2/pymockserver/Chart.yaml:version",
+    "helm_v2/pymockserver/values.yaml:tag",
+    "helm_v3/pymockserver/Chart.yaml:version",
+    "helm_v3/pymockserver/Chart.yaml:appVersion",
+    "clients/typescript-node/package.json:version",
+]
+
 [tool.poetry.dependencies]
 python = "^3.7"
 fastapi = "^0.46.0"
@@ -24,6 +37,7 @@ bump2version = "^0.5.11"
 invoke = "^1.4.0"
 gitpython = "^3.0.5"
 mergedeep = "^1.1.1"
+commitizen = "^1.19.2"
 
 [tool.black]
 line-length = 120
