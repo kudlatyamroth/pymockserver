@@ -9,7 +9,7 @@ DB_DIR = DEFAULT_DB_DIR if Path(DEFAULT_DB_DIR).is_dir() else None
 
 class Db:
     _cache: Cache = None
-    _dick_settings = {
+    _disk_settings = {
         "disk_pickle_protocol": 4,
         "cull_limit": 0,
         "eviction_policy": "none",
@@ -18,7 +18,7 @@ class Db:
     @property
     def cache(self):
         if self._cache is None:
-            self._cache = Cache(DB_DIR, **self._dick_settings)
+            self._cache = Cache(DB_DIR, **self._disk_settings)
         return self._cache
 
     def connect(self):
