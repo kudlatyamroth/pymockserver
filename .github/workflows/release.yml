@@ -1,0 +1,37 @@
+name: Release packages
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: '${{ secrets.PERSONAL_ACCESS_TOKEN }}'
+          fetch-depth: 0
+      - name: Configure repo
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git pull origin master --tags
+      - name: Generate helm packages
+        uses: stefanprodan/kube-tools@v1.4.0
+        with:
+          helm: 2.16.5
+          helmv3: 3.1.2
+          command: |
+            mkdir dist
+            helm package helm_v2/pymockserver/
+            mv pymockserver-`git tag | tail -n 1`.tgz dist/helm_v2-pymockserver-`git tag | tail -n 1`.tgz
+            helmv3 package helm_v3/pymockserver/
+            mv pymockserver-`git tag | tail -n 1`.tgz dist/helm_v3-pymockserver-`git tag | tail -n 1`.tgz
+      - name: Publish GitHub Release
+        uses: fnkr/github-action-ghr@v1.3
+        env:
+          GHR_PATH: dist/
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
