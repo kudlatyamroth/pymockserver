@@ -10,6 +10,63 @@
 
 - **typo**: rename settings dict in database model
 
+### Refactor
+
+- **helm**: fix typo in helm deployment
+
+## 1.5.5 
+
+### Refactor
+
+- **diskcache**: fix typo when no specify database directory
+
+### Perf
+
+- **cache**: defaults to not limit memory media volume
+
+## 1.5.4 
+
+### Perf
+
+- **gunicorn**: increase max_requests and jitter for workers
+- **cache**: use memory storage for sqlite file, if it not exist use tmp dir
+- **gunicorn**: limit workers to 4
+- **cache**: mount memory storage for use with diskcache
+
+## 1.5.3 
+
+### Feat
+
+- **logger**: setup logger
+
+### Fix
+
+- **pickle**: lock pickle_protocol on version 4
+
+### Perf
+
+- **cache**: disable cull and evict on diskcache
+
+## 1.5.1 
+
+### Perf
+
+- **gunicorn**: limit max_requests and increase keepalive
+
+## 1.4.0 
+
+### Feat
+
+- **cache**: add database layer, started and closed with fastapi
+
+### Refactor
+
+- **tests**: use diskcache in tests
+
+### Perf
+
+- **gunicorn**: remove concurrency limits
+
 ## 0.7.0 (2019-12-09)
 
 ## 0.6.0 (2019-12-03)
