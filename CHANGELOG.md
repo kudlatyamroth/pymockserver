@@ -1,4 +1,11 @@
 
+
+## 1.6.1 (2020-05-06)
+
+### Fix
+
+- **typescript-client**: update packages to fix security warning
+
 ## 1.6.0 
 
 ### Feat

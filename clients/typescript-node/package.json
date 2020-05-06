@@ -1,6 +1,6 @@
 {
   "name": "pymockserver-client",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "PyMockServer client",
   "repository": {
     "type": "git",
