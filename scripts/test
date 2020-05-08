@@ -1,0 +1,12 @@
+#!/bin/sh -e
+
+export PREFIX="poetry run python -m "
+if [ -d 'venv' ] ; then
+    export PREFIX="venv/bin/"
+fi
+
+${PREFIX}pytest -vv tests/
+${PREFIX}black pymockserver tests --check
+${PREFIX}isort --recursive --check-only pymockserver tests
+${PREFIX}flake8 pymockserver/ tests/
+${PREFIX}mypy pymockserver/ tests/
