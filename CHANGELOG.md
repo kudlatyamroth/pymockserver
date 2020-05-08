@@ -1,5 +1,12 @@
 
 
+
+## 1.6.2 (2020-05-08)
+
+### Refactor
+
+- **imports**: change local imports to have prefix with pymockserver
+
 ## 1.6.1 (2020-05-06)
 
 ### Fix
