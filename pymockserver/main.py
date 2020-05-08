@@ -5,7 +5,7 @@ from pymockserver.database import db
 from pymockserver.routers import meta, mockserver
 from pymockserver.utils import use_route_names_as_operation_ids
 
-__version__ = "1.6.2"
+__version__ = "1.6.3"
 
 app = FastAPI(
     title="MockServer API", description="Simple and fast mock server implemented in python", version=__version__,

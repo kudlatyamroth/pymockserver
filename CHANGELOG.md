@@ -1,6 +1,13 @@
 
 
 
+
+## 1.6.3 (2020-05-08)
+
+### Refactor
+
+- add little change to use some features from py3.8
+
 ## 1.6.2 (2020-05-08)
 
 ### Refactor
