@@ -21,8 +21,7 @@ def request_hash(request: HttpRequest):
 def query_params_to_http_qs(qs: List[Tuple[str, str]]):
     query_params: QueryStrings = {}
     for param in qs:
-        qp = query_params.get(param[0])
-        if qp:
+        if qp := query_params.get(param[0]):
             qp.append(param[1])
         else:
             query_params[param[0]] = [param[1]]
