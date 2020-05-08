@@ -1,8 +1,8 @@
 from typing import Dict, Optional
 
-from database import db
-from logger import logger
-from mock_types import MockedData, CreatePayload, HttpResponse
+from pymockserver.database import db
+from pymockserver.logger import logger
+from pymockserver.mock_types import CreatePayload, HttpResponse, MockedData
 
 mocks: Dict[str, MockedData] = {}
 

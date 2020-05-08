@@ -1,19 +1,13 @@
-import sys
-from pathlib import Path
-
 import pytest
 from mergedeep import merge
 from starlette.testclient import TestClient
 
-base_path = Path(__file__).parents[1].joinpath("pymockserver")
-sys.path.append(str(base_path))
-
-import database  # noqa
+from pymockserver import database  # noqa
 
 
 @pytest.fixture(scope="session")
 def app():
-    from main import app
+    from pymockserver.main import app
 
     return app
 

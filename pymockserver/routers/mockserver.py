@@ -4,12 +4,11 @@ import time
 from fastapi import APIRouter, HTTPException
 from starlette.requests import Request
 from starlette.responses import Response
-from starlette.status import HTTP_201_CREATED, HTTP_200_OK, HTTP_404_NOT_FOUND
+from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_404_NOT_FOUND
 
-import mocks_manager
-from mock_types import CreatePayload, HttpRequest
-from utils import request_hash, query_params_to_http_qs
-
+from pymockserver import mocks_manager
+from pymockserver.mock_types import CreatePayload, HttpRequest
+from pymockserver.utils import query_params_to_http_qs, request_hash
 
 router = APIRouter()
 
@@ -79,6 +78,8 @@ async def mock_response(*, url_path: str = None, request: Request, response: Res
 
     response.status_code = mocked_response.status_code
     try:
+        if not isinstance(mocked_response.body, (str, bytes, bytearray)):
+            raise TypeError("Body is not json string")
         return json.loads(mocked_response.body)
     except (json.JSONDecodeError, TypeError):
         return mocked_response.body

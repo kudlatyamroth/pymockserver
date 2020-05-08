@@ -2,7 +2,6 @@ from pathlib import Path
 
 from diskcache import Cache
 
-
 DEFAULT_DB_DIR = "/data/sqlite"
 DB_DIR = DEFAULT_DB_DIR if Path(DEFAULT_DB_DIR).is_dir() else None
 

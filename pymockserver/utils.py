@@ -1,9 +1,9 @@
-from typing import Optional, List, Tuple
+from typing import List, Optional, Tuple
 
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
 
-from mock_types import QueryStrings, HttpRequest
+from pymockserver.mock_types import HttpRequest, QueryStrings
 
 
 def join_query_string(qs: Optional[QueryStrings]):

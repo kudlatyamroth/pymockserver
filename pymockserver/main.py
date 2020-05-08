@@ -1,11 +1,9 @@
 import uvicorn
 from fastapi import FastAPI
 
-from database import db
-from routers import meta, mockserver
-
-from utils import use_route_names_as_operation_ids
-
+from pymockserver.database import db
+from pymockserver.routers import meta, mockserver
+from pymockserver.utils import use_route_names_as_operation_ids
 
 __version__ = "1.6.1"
 
