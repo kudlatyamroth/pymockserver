@@ -2,6 +2,13 @@
 
 
 
+
+## 1.6.4 (2020-05-13)
+
+### Fix
+
+- **docker**: change app dir and module name
+
 ## 1.6.3 (2020-05-09)
 
 ### Refactor
