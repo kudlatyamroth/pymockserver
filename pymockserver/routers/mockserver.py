@@ -6,8 +6,8 @@ from starlette.requests import Request
 from starlette.responses import Response
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_404_NOT_FOUND
 
-from pymockserver import mocks_manager
-from pymockserver.mock_types import CreatePayload, HttpRequest
+from pymockserver import managers
+from pymockserver.models import CreatePayload, HttpRequest
 from pymockserver.utils import query_params_to_http_qs, request_hash
 
 router = APIRouter()
@@ -21,7 +21,7 @@ async def add_mock(body: CreatePayload):
     If route is already mocked it will add it to queue.
     """
     req_hash = request_hash(body.httpRequest)
-    mocks_manager.add_mock(req_hash, body)
+    managers.add_mock(req_hash, body)
     return {"status": "ok"}
 
 
@@ -30,7 +30,7 @@ async def get_all_mocks():
     """
     Get all mocked routes
     """
-    return mocks_manager.get_mocks()
+    return managers.get_mocks()
 
 
 @router.delete("/mockserver", status_code=HTTP_200_OK)
@@ -39,7 +39,7 @@ async def delete_mock(http_request: HttpRequest):
     Delete mock specified in request
     """
     req_hash = request_hash(http_request)
-    return {"removed": mocks_manager.delete_mock(req_hash), "mocked": mocks_manager.get_mocks()}
+    return {"removed": managers.delete_mock(req_hash), "mocked": managers.get_mocks()}
 
 
 @router.delete("/mockserver/reset", status_code=HTTP_200_OK)
@@ -47,7 +47,7 @@ async def clear_all_mocks():
     """
     Delete all mocked routes
     """
-    mocks_manager.purge_mocks()
+    managers.purge_mocks()
     return {"status": "ok"}
 
 
@@ -64,11 +64,11 @@ async def mock_response(*, url_path: str = None, request: Request, response: Res
     )
 
     req_hash = request_hash(http_request)
-    mock = mocks_manager.get_mock(req_hash)
+    mock = managers.get_mock(req_hash)
     if mock is None:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Not found")
 
-    mocked_response = mocks_manager.decrease_remaining_times(mock, req_hash)
+    mocked_response = managers.decrease_remaining_times(mock, req_hash)
     if mocked_response.headers:
         for header, value in mocked_response.headers.items():
             response.headers[header] = value
