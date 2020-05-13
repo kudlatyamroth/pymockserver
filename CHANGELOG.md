@@ -3,6 +3,17 @@
 
 
 
+
+## 1.6.5 (2020-05-13)
+
+### Fix
+
+- **logger**: remove duplicated app name in logs
+
+### Refactor
+
+- add missing types and better file names
+
 ## 1.6.4 (2020-05-13)
 
 ### Fix
