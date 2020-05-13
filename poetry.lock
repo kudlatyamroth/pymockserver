@@ -196,19 +196,6 @@ pyflakes = ">=2.2.0,<2.3.0"
 
 [[package]]
 category = "dev"
-description = "A plugin for flake8 integrating mypy."
-name = "flake8-mypy"
-optional = false
-python-versions = "*"
-version = "17.8.0"
-
-[package.dependencies]
-attrs = "*"
-flake8 = ">=3.0.0"
-mypy = "*"
-
-[[package]]
-category = "dev"
 description = "Git Object Database"
 name = "gitdb"
 optional = false
@@ -691,7 +678,7 @@ python-versions = ">=3.6.1"
 version = "8.1"
 
 [metadata]
-content-hash = "be2fb6580aecace4800aa11521959a6ec66e2df8b79dacd562acaabfd0813d4e"
+content-hash = "44d8215a93897c17e4a7bc4830d78ff96f6928e9ca9ba62e276a4d31f4e91508"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -765,10 +752,6 @@ filelock = [
 flake8 = [
     {file = "flake8-3.8.0a2-py2.py3-none-any.whl", hash = "sha256:c09e7e4ea0d91fa36f7b8439ca158e592be56524f0b67c39ab0ea2b85ed8f9a4"},
     {file = "flake8-3.8.0a2.tar.gz", hash = "sha256:f33c5320eaa459cdee6367016a4bf4ba2a9b81499ce56e6a32abbf0b8d3a2eb4"},
-]
-flake8-mypy = [
-    {file = "flake8-mypy-17.8.0.tar.gz", hash = "sha256:47120db63aff631ee1f84bac6fe8e64731dc66da3efc1c51f85e15ade4a3ba18"},
-    {file = "flake8_mypy-17.8.0-py35.py36-none-any.whl", hash = "sha256:cff009f4250e8391bf48990093cff85802778c345c8449d6498b62efefeebcbc"},
 ]
 gitdb = [
     {file = "gitdb-4.0.5-py3-none-any.whl", hash = "sha256:91f36bfb1ab7949b3b40e23736db18231bf7593edada2ba5c3a174a7b23657ac"},
