@@ -18,7 +18,7 @@ COPY ./pyproject.toml ./poetry.lock* /app/
 
 RUN poetry install --no-root --no-dev
 
-COPY pymockserver /app
+COPY pymockserver /app/pymockserver
 
 EXPOSE 80
 
@@ -28,3 +28,4 @@ ENV KEEP_ALIVE 300
 ENV TIMEOUT 300
 ENV ACCESS_LOG ''
 ENV GUNICORN_CMD_ARGS '--max-requests=300 --max-requests-jitter=300'
+ENV MODULE_NAME 'pymockserver.main'
