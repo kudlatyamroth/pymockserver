@@ -2,7 +2,7 @@ from typing import Dict, Optional
 
 from pymockserver.database import db
 from pymockserver.logger import logger
-from pymockserver.mock_types import CreatePayload, HttpResponse, MockedData
+from pymockserver.models import CreatePayload, HttpResponse, MockedData
 
 mocks: Dict[str, MockedData] = {}
 
@@ -47,7 +47,7 @@ def add_mock(req_hash: str, payload: CreatePayload) -> MockedData:
     return mock
 
 
-def get_mocks():
+def get_mocks() -> Dict:
     return dict(db.all())
 
 
