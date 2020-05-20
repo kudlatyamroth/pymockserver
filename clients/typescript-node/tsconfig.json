@@ -2,12 +2,12 @@
   "compilerOptions": {
     "declaration": true,
     "esModuleInterop": true,
-    "lib": [ "es2017" ],
+    "lib": [ "es2019" ],
     "module": "commonjs",
     "outDir": "dist",
     "sourceMap": true,
     "strict": true,
-    "target": "ES2017"
+    "target": "ES2019"
   },
   "include": [
     "src/**/*.ts"

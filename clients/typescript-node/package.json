@@ -12,18 +12,18 @@
   "author": "Karol Fuksiewicz",
   "license": "GPL-3.0",
   "dependencies": {
-    "@types/bluebird": "^3.5.30",
-    "@types/request": "^2.48.4",
+    "@types/bluebird": "^3.5.31",
+    "@types/request": "^2.48.5",
     "bluebird": "^3.7.2",
     "request": "^2.88.2"
   },
   "devDependencies": {
-    "@types/node": "13.13.5",
-    "@types/jest": "^25.2.1",
+    "@types/node": "14.0.4",
+    "@types/jest": "^25.2.3",
     "jest": "^26.0.1",
     "prettier": "^2.0.5",
-    "ts-jest": "^25.5.0",
-    "typescript": "^3.8.3"
+    "ts-jest": "^26.0.0",
+    "typescript": "^3.9.3"
   },
   "jest": {
     "globals": {

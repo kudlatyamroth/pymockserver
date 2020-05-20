@@ -5,8 +5,8 @@ from pathlib import Path
 
 from git import Repo
 
-from deploy.local_invoke import context, run
 from deploy import log
+from deploy.local_invoke import context, run
 
 
 @dataclass
@@ -33,7 +33,7 @@ class TypescriptClient:
 
     def publish(self):
         with context.cd(str(self.client_dir)):
-            run(f"npm publish", msg="Publish npm package")
+            run("npm publish", msg="Publish npm package")
 
     def _commit_generated_client(self):
         if not self.repo.is_dirty():
@@ -43,7 +43,7 @@ class TypescriptClient:
         try:
             log.info("Adding files for commit")
             self.repo.git.add(".")
-            self.repo.index.commit(f"generated typescript client version: {self.new_version}")
+            self.repo.index.commit(f"bump: generated typescript-client version: {self.new_version}")
             log.status("Adding commit with generated client")
         except Exception as e:
             log.status("Adding commit with generated client", failed=True)

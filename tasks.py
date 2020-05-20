@@ -28,6 +28,11 @@ class ReleaseProject:
         self.build_packages()
         self.publish_packages()
 
+    def run_node(self):
+        self.bump_version()
+        self.node_client.build()
+        self.node_client.publish()
+
     def bump_version(self):
         self._fill_old_version()
         if self.bump:
@@ -68,7 +73,7 @@ class ReleaseProject:
         self.__run("git push --follow-tags")
 
     def _bump_version(self):
-        self.__run(f"cz bump -ch", warn=False)
+        self.__run("cz bump -ch", warn=False)
 
     def _fill_new_version(self):
         self.new_version = self._get_project_version()
@@ -89,3 +94,10 @@ def publish(c, bump=True):
     release = ReleaseProject(c, bump)
     release.run()
     print(f"Released new version: {release.new_version}")
+
+
+@task
+def publish_node(c, bump=False):
+    release = ReleaseProject(c, bump)
+    release.run_node()
+    print(f"Released new typescript-node version: {release.new_version}")

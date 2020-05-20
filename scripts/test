@@ -6,7 +6,7 @@ if [ -d 'venv' ] ; then
 fi
 
 ${PREFIX}pytest -vv tests/
-${PREFIX}black pymockserver tests --check
-${PREFIX}isort --recursive --check-only pymockserver tests
-${PREFIX}flake8 pymockserver/ tests/
-${PREFIX}mypy pymockserver/ tests/
+${PREFIX}black pymockserver tests deploy --check
+${PREFIX}isort --recursive --check-only pymockserver tests deploy
+${PREFIX}flake8 pymockserver/ tests/ deploy/
+${PREFIX}mypy pymockserver/ tests/ deploy/

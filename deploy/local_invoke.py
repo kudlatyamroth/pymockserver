@@ -2,7 +2,6 @@ from invoke import Context
 
 from deploy.log import status
 
-
 context = Context()
 
 

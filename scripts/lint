@@ -7,5 +7,5 @@ fi
 
 set -x
 
-${PREFIX}isort --recursive --apply pymockserver tests
-${PREFIX}black pymockserver tests
+${PREFIX}isort --recursive --apply pymockserver tests deploy
+${PREFIX}black pymockserver tests deploy
