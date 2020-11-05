@@ -73,3 +73,43 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+## Fixture files:
+#fixtureFiles:
+#  fixture1.yaml: |
+#    - httpRequest:
+#        method: GET
+#        path: /users
+#        queryStringParameters:
+#          name: [ "John" ]
+#          age: [ "25", "30" ]
+#      httpResponse:
+#        statusCode: 200
+#        headers:
+#          request-id: 'f9ed4675f1c53513c61a3b3b4e25b4c0'
+#        body: '{"users":["John","Dave"]}"'
+#        remainingTimes: -1
+#        delay: 0
+#
+#  fixture2.json: |
+#    [{
+#      "httpRequest": {
+#        "method": "GET",
+#        "path": "/user_list",
+#        "queryStringParameters": {
+#          "name": [ "John" ],
+#          "age": [ "25", "30" ]
+#        }
+#      },
+#      "httpResponse": {
+#        "statusCode": 202,
+#        "headers": {
+#          "request-id": "f9ed4675f1c53513c61a3b3b4e25b4c0"
+#        },
+#        "body": {
+#          "users": ["John","Dave"]
+#        },
+#        "remainingTimes": 2,
+#        "delay": 0
+#      }
+#    }]

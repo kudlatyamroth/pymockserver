@@ -32,6 +32,10 @@ spec:
           volumeMounts:
             - name: sqlite-storage
               mountPath: /data/sqlite
+            {{- if .Values.fixtureFiles }}
+            - name: fixture-files
+              mountPath: /etc/fixtures
+            {{- end }}
           ports:
             - name: http
               containerPort: 80
@@ -61,6 +65,11 @@ spec:
             {{- if .Values.memoryMediaLimit }}
             sizeLimit: {{ .Values.memoryMediaLimit }}
             {{- end }}
+        {{- if .Values.fixtureFiles }}
+        - name: fixture-files
+          configMap:
+            name: {{ .Release.Name }}-files
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
