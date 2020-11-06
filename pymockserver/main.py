@@ -2,6 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 
 from pymockserver.database import db
+from pymockserver.fixture import load_fixtures
 from pymockserver.routers import meta, mockserver
 from pymockserver.utils import use_route_names_as_operation_ids
 
@@ -17,6 +18,7 @@ app = FastAPI(
 @app.on_event("startup")
 def startup():
     db.connect()
+    load_fixtures()
 
 
 @app.on_event("shutdown")

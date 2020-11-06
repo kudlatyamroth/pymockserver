@@ -34,6 +34,12 @@ def decrease_remaining_times(mock: MockedData, req_hash: str) -> HttpResponse:
     return response
 
 
+def set_mocks(req_hash: str, payload: MockedData) -> MockedData:
+    db.set(req_hash, payload)
+    logger.info(f"Set mocks for: {req_hash}")
+    return payload
+
+
 def add_mock(req_hash: str, payload: CreatePayload) -> MockedData:
     mock = db.get(req_hash)
     if mock:
