@@ -13,7 +13,10 @@ class HttpRequest(BaseModel):
         title="queryStringParameters",
         alias="queryStringParameters",
         description="Query string parameters",
-        example={"name": ["John"], "age": ["25", "30"],},
+        example={
+            "name": ["John"],
+            "age": ["25", "30"],
+        },
     )
 
 
@@ -28,7 +31,11 @@ class HttpResponse(BaseModel):
         le=599,
     )
     headers: Dict[str, str] = Field(
-        None, description="Headers included in mock response", example={"x-user": "John Doe",},
+        None,
+        description="Headers included in mock response",
+        example={
+            "x-user": "John Doe",
+        },
     )
     body: Union[bool, str, int, Dict, List, None] = Field(
         "", description="Body that will be returned", example='{"users":["John","Dave"]}'

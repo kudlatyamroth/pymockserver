@@ -7,9 +7,17 @@ def test_minimal_request_to_add_mock(client):
         "path": "/users",
     }
     http_response = {
-        "body": {"users": ["John Doe", "John Dave"],},
+        "body": {
+            "users": ["John Doe", "John Dave"],
+        },
     }
-    add_response = client.post("/mockserver", json={"httpRequest": http_request, "httpResponse": http_response,})
+    add_response = client.post(
+        "/mockserver",
+        json={
+            "httpRequest": http_request,
+            "httpResponse": http_response,
+        },
+    )
 
     assert add_response.status_code == 201
     assert add_response.json() == {"status": "ok"}
@@ -24,16 +32,28 @@ def test_largest_request_to_add_mock(client):
     http_request = {
         "method": "GET",
         "path": "/users",
-        "queryStringParameters": {"name": ["John"],},
+        "queryStringParameters": {
+            "name": ["John"],
+        },
     }
     http_response = {
         "statusCode": 201,
-        "headers": {"x-user": "John Doe",},
-        "body": {"users": ["John Doe", "John Dave"],},
+        "headers": {
+            "x-user": "John Doe",
+        },
+        "body": {
+            "users": ["John Doe", "John Dave"],
+        },
         "remainingTimes": -1,
         "delay": 0,
     }
-    add_response = client.post("/mockserver", json={"httpRequest": http_request, "httpResponse": http_response,})
+    add_response = client.post(
+        "/mockserver",
+        json={
+            "httpRequest": http_request,
+            "httpResponse": http_response,
+        },
+    )
 
     assert add_response.status_code == 201
     assert add_response.json() == {"status": "ok"}
@@ -46,8 +66,14 @@ def test_largest_request_to_add_mock(client):
 @pytest.mark.parametrize(
     "body",
     [
-        [{"users": ["John Doe", "John Dave"],}],
-        {"users": ["John Doe", "John Dave"],},
+        [
+            {
+                "users": ["John Doe", "John Dave"],
+            }
+        ],
+        {
+            "users": ["John Doe", "John Dave"],
+        },
         ["users"],
         "a:300",
         "",
@@ -69,7 +95,13 @@ def test_response_body_could_be_anything(client, body):
         "body": body,
     }
 
-    add_response = client.post("/mockserver", json={"httpRequest": http_request, "httpResponse": http_response,})
+    add_response = client.post(
+        "/mockserver",
+        json={
+            "httpRequest": http_request,
+            "httpResponse": http_response,
+        },
+    )
     assert add_response.status_code == 201
     assert add_response.json() == {"status": "ok"}
 
@@ -84,10 +116,18 @@ def test_missing_path_not_add_mocks(client):
         "method": "GET",
     }
     http_response = {
-        "body": {"users": ["John Doe", "John Dave"],},
+        "body": {
+            "users": ["John Doe", "John Dave"],
+        },
     }
 
-    add_response = client.post("/mockserver", json={"httpRequest": http_request, "httpResponse": http_response,})
+    add_response = client.post(
+        "/mockserver",
+        json={
+            "httpRequest": http_request,
+            "httpResponse": http_response,
+        },
+    )
     assert add_response.status_code == 422
 
     get_response = client.get("/mockserver")
@@ -98,20 +138,40 @@ def test_missing_path_not_add_mocks(client):
 def test_wrong_format_of_qs_not_add_mocks(client):
     http_request = {
         "path": "/users",
-        "queryStringParameters": {"name": "John",},
+        "queryStringParameters": {
+            "name": "John",
+        },
     }
     http_response = {
-        "body": {"users": ["John Doe", "John Dave"],},
+        "body": {
+            "users": ["John Doe", "John Dave"],
+        },
     }
 
-    add_response = client.post("/mockserver", json={"httpRequest": http_request, "httpResponse": http_response,})
+    add_response = client.post(
+        "/mockserver",
+        json={
+            "httpRequest": http_request,
+            "httpResponse": http_response,
+        },
+    )
     assert add_response.status_code == 422
 
     get_response = client.get("/mockserver")
     assert get_response.json() == {}
 
 
-@pytest.mark.parametrize("status", ["", None, "a", -100, 69, 600,])
+@pytest.mark.parametrize(
+    "status",
+    [
+        "",
+        None,
+        "a",
+        -100,
+        69,
+        600,
+    ],
+)
 @pytest.mark.usefixtures("cleanup")
 def test_wrong_value_of_status_code(client, status):
     http_request = {
@@ -122,14 +182,26 @@ def test_wrong_value_of_status_code(client, status):
         "statusCode": status,
     }
 
-    add_response = client.post("/mockserver", json={"httpRequest": http_request, "httpResponse": http_response,})
+    add_response = client.post(
+        "/mockserver",
+        json={
+            "httpRequest": http_request,
+            "httpResponse": http_response,
+        },
+    )
     assert add_response.status_code == 422
 
     get_response = client.get("/mockserver")
     assert get_response.json() == {}
 
 
-@pytest.mark.parametrize("headers", [{"x-user": ["test"]}, {"x-user": {100: 100}},])
+@pytest.mark.parametrize(
+    "headers",
+    [
+        {"x-user": ["test"]},
+        {"x-user": {100: 100}},
+    ],
+)
 @pytest.mark.usefixtures("cleanup")
 def test_wrong_value_of_response_headers(client, headers):
     http_request = {
@@ -140,14 +212,28 @@ def test_wrong_value_of_response_headers(client, headers):
         "headers": headers,
     }
 
-    add_response = client.post("/mockserver", json={"httpRequest": http_request, "httpResponse": http_response,})
+    add_response = client.post(
+        "/mockserver",
+        json={
+            "httpRequest": http_request,
+            "httpResponse": http_response,
+        },
+    )
     assert add_response.status_code == 422
 
     get_response = client.get("/mockserver")
     assert get_response.json() == {}
 
 
-@pytest.mark.parametrize("times", ["", None, "a", -100,])
+@pytest.mark.parametrize(
+    "times",
+    [
+        "",
+        None,
+        "a",
+        -100,
+    ],
+)
 @pytest.mark.usefixtures("cleanup")
 def test_wrong_value_of_remaining_times(client, times):
     http_request = {
@@ -158,14 +244,28 @@ def test_wrong_value_of_remaining_times(client, times):
         "remainingTimes": times,
     }
 
-    add_response = client.post("/mockserver", json={"httpRequest": http_request, "httpResponse": http_response,})
+    add_response = client.post(
+        "/mockserver",
+        json={
+            "httpRequest": http_request,
+            "httpResponse": http_response,
+        },
+    )
     assert add_response.status_code == 422
 
     get_response = client.get("/mockserver")
     assert get_response.json() == {}
 
 
-@pytest.mark.parametrize("delay", ["", None, "a", -100,])
+@pytest.mark.parametrize(
+    "delay",
+    [
+        "",
+        None,
+        "a",
+        -100,
+    ],
+)
 @pytest.mark.usefixtures("cleanup")
 def test_wrong_value_of_response_delay(client, delay):
     http_request = {
@@ -176,7 +276,13 @@ def test_wrong_value_of_response_delay(client, delay):
         "delay": delay,
     }
 
-    add_response = client.post("/mockserver", json={"httpRequest": http_request, "httpResponse": http_response,})
+    add_response = client.post(
+        "/mockserver",
+        json={
+            "httpRequest": http_request,
+            "httpResponse": http_response,
+        },
+    )
     assert add_response.status_code == 422
 
     get_response = client.get("/mockserver")

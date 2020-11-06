@@ -3,13 +3,29 @@ import timeit
 import pytest
 
 
-@pytest.mark.parametrize("status", [101, 203, 301, 400, 505,])
+@pytest.mark.parametrize(
+    "status",
+    [
+        101,
+        203,
+        301,
+        400,
+        505,
+    ],
+)
 @pytest.mark.usefixtures("cleanup")
 def test_should_response_with_given_status_code(client, create_mock, status):
     path = "/users"
 
     create_mock(
-        {"httpRequest": {"path": path,}, "httpResponse": {"statusCode": status,},}
+        {
+            "httpRequest": {
+                "path": path,
+            },
+            "httpResponse": {
+                "statusCode": status,
+            },
+        }
     )
 
     mock_response = client.get(path)
@@ -21,7 +37,14 @@ def test_should_response_with_given_headers(client, create_mock):
     path = "/users"
 
     create_mock(
-        {"httpRequest": {"path": path,}, "httpResponse": {"headers": {"x-status": "100"},},}
+        {
+            "httpRequest": {
+                "path": path,
+            },
+            "httpResponse": {
+                "headers": {"x-status": "100"},
+            },
+        }
     )
 
     mock_response = client.get(path)
@@ -33,7 +56,14 @@ def test_should_response_only_given_times(client, create_mock):
     path = "/users"
 
     create_mock(
-        {"httpRequest": {"path": path,}, "httpResponse": {"remainingTimes": 1,},}
+        {
+            "httpRequest": {
+                "path": path,
+            },
+            "httpResponse": {
+                "remainingTimes": 1,
+            },
+        }
     )
 
     mock_response = client.get(path)
@@ -48,10 +78,20 @@ def test_should_response_with_first_mock_and_then_next(client, create_mock):
     path = "/users"
 
     create_mock(
-        {"httpRequest": {"path": path,}, "httpResponse": {"remainingTimes": 1, "body": "John"},}
+        {
+            "httpRequest": {
+                "path": path,
+            },
+            "httpResponse": {"remainingTimes": 1, "body": "John"},
+        }
     )
     create_mock(
-        {"httpRequest": {"path": path,}, "httpResponse": {"remainingTimes": 1, "body": "Jane"},}
+        {
+            "httpRequest": {
+                "path": path,
+            },
+            "httpResponse": {"remainingTimes": 1, "body": "Jane"},
+        }
     )
 
     mock_response = client.get(path)
@@ -71,7 +111,14 @@ def test_should_delay_response(client, create_mock):
     path = "/users"
 
     create_mock(
-        {"httpRequest": {"path": path,}, "httpResponse": {"delay": 500,},}
+        {
+            "httpRequest": {
+                "path": path,
+            },
+            "httpResponse": {
+                "delay": 500,
+            },
+        }
     )
 
     def get_response():
@@ -82,7 +129,16 @@ def test_should_delay_response(client, create_mock):
     assert exec_time >= 500
 
 
-@pytest.mark.parametrize("method", ["POST", "GET", "PUT", "PATCH", "DELETE",])
+@pytest.mark.parametrize(
+    "method",
+    [
+        "POST",
+        "GET",
+        "PUT",
+        "PATCH",
+        "DELETE",
+    ],
+)
 @pytest.mark.usefixtures("cleanup")
 def test_should_response_only_on_mocked_method(client, create_mock, method):
     methods = [
@@ -95,7 +151,12 @@ def test_should_response_only_on_mocked_method(client, create_mock, method):
     path = "/users"
 
     create_mock(
-        {"httpRequest": {"method": method, "path": path,},}
+        {
+            "httpRequest": {
+                "method": method,
+                "path": path,
+            },
+        }
     )
 
     methods.remove(method)
