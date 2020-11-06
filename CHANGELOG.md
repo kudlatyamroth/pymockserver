@@ -4,6 +4,13 @@
 
 
 
+## 1.7.0 (2020-11-06)
+
+### Feat
+
+- load fixtures on start
+- **helm**: add possibility to add fixture files loaded on start
+
 ## 1.6.5 (2020-05-13)
 
 ### Fix
