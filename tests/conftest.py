@@ -27,8 +27,15 @@ def cleanup(app):
 @pytest.fixture(scope="function")
 def base_data(app):
     json_data = {
-        "httpRequest": {"method": "GET", "path": "/users",},
-        "httpResponse": {"statusCode": 200, "remainingTimes": -1, "delay": 0,},
+        "httpRequest": {
+            "method": "GET",
+            "path": "/users",
+        },
+        "httpResponse": {
+            "statusCode": 200,
+            "remainingTimes": -1,
+            "delay": 0,
+        },
     }
 
     def fill_data(data):
