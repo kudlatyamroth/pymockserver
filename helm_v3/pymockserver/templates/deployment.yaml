@@ -33,7 +33,7 @@ spec:
             {{- if .Values.fixtureFiles }}
             - name: fixture-files
               mountPath: /etc/fixtures
-            {{ - end }}
+            {{- end }}
           ports:
             - name: http
               containerPort: 80
