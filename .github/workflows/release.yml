@@ -19,10 +19,10 @@ jobs:
           git config --local user.name "GitHub Action"
           git pull origin master --tags
       - name: Generate helm packages
-        uses: stefanprodan/kube-tools@v1.4.0
+        uses: stefanprodan/kube-tools@v1.5.0
         with:
-          helm: 2.16.5
-          helmv3: 3.1.2
+          helm: 2.17.0
+          helmv3: 3.6.0
           command: |
             helm init --client-only
             mkdir dist
