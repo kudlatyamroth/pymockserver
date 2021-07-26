@@ -1,8 +1,8 @@
-from typing import Dict, List, Union
+from typing import Any, Union
 
 from pydantic import BaseModel, Field
 
-QueryStrings = Dict[str, List[str]]
+QueryStrings = dict[str, list[str]]
 
 
 class HttpRequest(BaseModel):
@@ -30,14 +30,14 @@ class HttpResponse(BaseModel):
         ge=100,
         le=599,
     )
-    headers: Dict[str, str] = Field(
+    headers: dict[str, str] = Field(
         None,
         description="Headers included in mock response",
         example={
             "x-user": "John Doe",
         },
     )
-    body: Union[bool, str, int, Dict, List, None] = Field(
+    body: Union[bool, str, int, dict[Any, Any], list[Any], None] = Field(
         "", description="Body that will be returned", example='{"users":["John","Dave"]}'
     )
     remaining_times: int = Field(
@@ -56,7 +56,7 @@ class CreatePayload(BaseModel):
     httpResponse: HttpResponse
 
 
-MockList = List[HttpResponse]
+MockList = list[HttpResponse]
 
 
 class MockedData(BaseModel):

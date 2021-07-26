@@ -9,10 +9,10 @@ class DockerImage:
     new_version: str
     project_name: str
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.image_name = f"kudlatyamroth/{self.project_name}"
 
-    def build(self):
+    def build(self) -> None:
         log.section("Build docker images")
         run(
             f"docker build -t {self.image_name}:{self.new_version} .",
@@ -20,7 +20,7 @@ class DockerImage:
         )
         run(f"docker build -t {self.image_name}:latest .", msg=f"version: {self.image_name}:latest")
 
-    def publish(self):
+    def publish(self) -> None:
         log.section("Publish docker images")
         run(f"docker push {self.image_name}:{self.new_version}", msg=f"version: {self.image_name}:{self.new_version}")
         run(f"docker push {self.image_name}:latest", msg=f"version: {self.image_name}:latest")

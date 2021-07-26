@@ -1,5 +1,6 @@
 import json
 import time
+from typing import Any, Optional, Union
 
 from fastapi import APIRouter, HTTPException
 from starlette.requests import Request
@@ -7,14 +8,14 @@ from starlette.responses import Response
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_404_NOT_FOUND
 
 from pymockserver import managers
-from pymockserver.models import CreatePayload, HttpRequest
+from pymockserver.models import CreatePayload, HttpRequest, MockedData
 from pymockserver.utils import query_params_to_http_qs, request_hash
 
-router = APIRouter()
+router = APIRouter(tags=["MockServer"])
 
 
 @router.post("/mockserver", status_code=HTTP_201_CREATED)
-async def add_mock(body: CreatePayload):
+async def add_mock(body: CreatePayload) -> dict[str, str]:
     """
     Create route mock
 
@@ -26,7 +27,7 @@ async def add_mock(body: CreatePayload):
 
 
 @router.get("/mockserver", status_code=HTTP_200_OK)
-async def get_all_mocks():
+async def get_all_mocks() -> dict[str, MockedData]:
     """
     Get all mocked routes
     """
@@ -34,7 +35,7 @@ async def get_all_mocks():
 
 
 @router.delete("/mockserver", status_code=HTTP_200_OK)
-async def delete_mock(http_request: HttpRequest):
+async def delete_mock(http_request: HttpRequest) -> dict[str, Union[Optional[MockedData], dict[str, MockedData]]]:
     """
     Delete mock specified in request
     """
@@ -43,7 +44,7 @@ async def delete_mock(http_request: HttpRequest):
 
 
 @router.delete("/mockserver/reset", status_code=HTTP_200_OK)
-async def clear_all_mocks():
+async def clear_all_mocks() -> dict[str, str]:
     """
     Delete all mocked routes
     """
@@ -56,7 +57,7 @@ async def clear_all_mocks():
 @router.get("{url_path:path}", include_in_schema=False)
 @router.put("{url_path:path}", include_in_schema=False)
 @router.delete("{url_path:path}", include_in_schema=False)
-async def mock_response(*, url_path: str = None, request: Request, response: Response):
+async def mock_response(*, url_path: Optional[str] = None, request: Request, response: Response) -> Any:
     http_request = HttpRequest(
         method=request.method,
         path=url_path,
