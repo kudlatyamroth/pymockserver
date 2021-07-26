@@ -3,7 +3,7 @@ from typing import Optional
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
 
-from pymockserver.models import HttpRequest, QueryStrings
+from pymockserver.models.type import HttpRequest, QueryStrings
 
 
 def join_query_string(qs: Optional[QueryStrings]) -> str:

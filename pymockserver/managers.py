@@ -2,7 +2,7 @@ from typing import Optional, cast
 
 from pymockserver.database import db
 from pymockserver.logger import logger
-from pymockserver.models import CreatePayload, HttpResponse, MockedData
+from pymockserver.models.type import CreatePayload, HttpResponse, MockedData
 
 mocks: dict[str, MockedData] = {}
 

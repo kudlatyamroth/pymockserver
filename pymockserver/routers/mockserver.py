@@ -8,7 +8,7 @@ from starlette.responses import Response
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_404_NOT_FOUND
 
 from pymockserver import managers
-from pymockserver.models import CreatePayload, HttpRequest, MockedData
+from pymockserver.models.type import CreatePayload, HttpRequest, MockedData
 from pymockserver.utils import query_params_to_http_qs, request_hash
 
 router = APIRouter(tags=["MockServer"])
