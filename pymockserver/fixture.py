@@ -6,7 +6,7 @@ import yaml
 
 from pymockserver.logger import logger
 from pymockserver.managers import set_mocks
-from pymockserver.models import MockedData
+from pymockserver.models.type import MockedData
 from pymockserver.utils import request_hash
 
 FIXTURES_DIR = Path("/etc/fixtures")
