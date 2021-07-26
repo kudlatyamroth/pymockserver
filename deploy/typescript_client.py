@@ -33,6 +33,10 @@ class TypescriptClient:
         self._build_node_client()
         self._commit_generated_client()
 
+    def generate_openapi(self) -> None:
+        log.section("Start generating openapi")
+        self._build_openapi()
+
     def publish(self) -> None:
         with context.cd(str(self.client_dir)):
             run("npm publish", msg="Publish npm package")

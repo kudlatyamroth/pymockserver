@@ -8,11 +8,26 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9']
     steps:
       - uses: actions/checkout@v2
         with:
           token: '${{ secrets.PERSONAL_ACCESS_TOKEN }}'
           fetch-depth: 0
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install -U poetry
+          poetry --version
+          poetry install
+          invoke generate-openapi
+          mkdir dist
+          mv openapi.json dist/openapi.json
       - name: Configure repo
         run: |
           git config --local user.email "action@github.com"

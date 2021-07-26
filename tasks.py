@@ -33,6 +33,11 @@ class ReleaseProject:
         self.node_client.build()
         self.node_client.publish()
 
+    def generate_openapi(self):
+        self._fill_old_version()
+        self._fill_new_version()
+        self.node_client.generate_openapi()
+
     def bump_version(self):
         self._fill_old_version()
         if self.bump:
@@ -101,3 +106,10 @@ def publish_node(c, bump=False):
     release = ReleaseProject(c, bump)
     release.run_node()
     print(f"Released new typescript-node version: {release.new_version}")
+
+
+@task
+def generate_openapi(c, bump=False):
+    release = ReleaseProject(c, bump)
+    release.generate_openapi()
+    print("Generated new openapi")
