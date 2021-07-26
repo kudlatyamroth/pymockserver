@@ -8,11 +8,10 @@ license = "GPL-3.0"
 [tool.commitizen]
 name = "cz_conventional_commits"
 version = "1.7.1"
+annotated_tag = true
 version_files = [
     "pyproject.toml:version",
     "pymockserver/main.py:__version__",
-    "helm_v2/pymockserver/Chart.yaml:version",
-    "helm_v2/pymockserver/values.yaml:tag",
     "helm_v3/pymockserver/Chart.yaml:version",
     "helm_v3/pymockserver/Chart.yaml:appVersion",
     "clients/typescript-node/package.json:version",
