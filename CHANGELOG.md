@@ -4,6 +4,12 @@
 
 
 
+## 1.8.3 (2021-07-26)
+
+### Fix
+
+- creating dist dir during release build
+
 ## 1.8.2 (2021-07-26)
 
 ### Fix
