@@ -6,7 +6,7 @@ from pymockserver.fixture import load_fixtures
 from pymockserver.routers import meta, mockserver
 from pymockserver.utils import use_route_names_as_operation_ids
 
-__version__ = "1.7.1"
+__version__ = "1.8.0"
 
 app = FastAPI(
     title="MockServer API",

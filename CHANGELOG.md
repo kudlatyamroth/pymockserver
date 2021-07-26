@@ -4,6 +4,12 @@
 
 
 
+## 1.8.0 (2021-07-26)
+
+### Feat
+
+- do not try to bump version of removed helm v2 files
+
 ## 1.7.1 (2021-01-21)
 
 ### Fix
