@@ -4,6 +4,12 @@
 
 
 
+## 1.8.1 (2021-07-26)
+
+### Fix
+
+- run invoke by poetry for releasing openapi
+
 ## 1.8.0 (2021-07-26)
 
 ### Feat
