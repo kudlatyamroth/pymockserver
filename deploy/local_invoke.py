@@ -1,3 +1,5 @@
+from typing import Optional
+
 from invoke import Context
 
 from deploy.log import status
@@ -6,11 +8,13 @@ context = Context()
 
 
 class OutputDef:
-    def __init__(self):
+    stdout: str = ""
+
+    def __init__(self) -> None:
         self.failed = False
 
 
-def run(command, hide=True, warn=True, msg="", quite=False):
+def run(command: str, hide: bool = True, warn: bool = True, msg: str = "", quite: bool = False) -> Optional[str]:
     output = OutputDef()
     try:
         output = context.run(command, hide=hide, warn=warn, pty=True)

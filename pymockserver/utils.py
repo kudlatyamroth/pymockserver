@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import Optional
 
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
@@ -6,7 +6,7 @@ from fastapi.routing import APIRoute
 from pymockserver.models import HttpRequest, QueryStrings
 
 
-def join_query_string(qs: Optional[QueryStrings]):
+def join_query_string(qs: Optional[QueryStrings]) -> str:
     if qs is None:
         return ""
     sorted_dict = dict(sorted({key: ",".join(sorted(value)) for key, value in qs.items()}.items()))
@@ -18,7 +18,7 @@ def request_hash(request: HttpRequest) -> str:
     return f"{request.method}:{request.path}?{qs}"
 
 
-def query_params_to_http_qs(qs: List[Tuple[str, str]]) -> QueryStrings:
+def query_params_to_http_qs(qs: list[tuple[str, str]]) -> QueryStrings:
     query_params: QueryStrings = {}
     for param in qs:
         if qp := query_params.get(param[0]):

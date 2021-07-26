@@ -1,10 +1,10 @@
-from typing import Dict, Optional
+from typing import Optional, cast
 
 from pymockserver.database import db
 from pymockserver.logger import logger
 from pymockserver.models import CreatePayload, HttpResponse, MockedData
 
-mocks: Dict[str, MockedData] = {}
+mocks: dict[str, MockedData] = {}
 
 
 def get_mock(req_hash: str) -> Optional[MockedData]:
@@ -13,7 +13,7 @@ def get_mock(req_hash: str) -> Optional[MockedData]:
         logger.info(f"Mock not found: {req_hash}")
         return mock
     logger.info(f"Found mock for hash: {req_hash}")
-    return mock
+    return cast(MockedData, mock)
 
 
 def decrease_remaining_times(mock: MockedData, req_hash: str) -> HttpResponse:
@@ -46,14 +46,14 @@ def add_mock(req_hash: str, payload: CreatePayload) -> MockedData:
         mock.httpResponse.append(payload.httpResponse)
         logger.info(f"Append mock to hash: {req_hash}")
         db.set(req_hash, mock)
-        return mock
+        return cast(MockedData, mock)
     mock = MockedData(httpRequest=payload.httpRequest, httpResponse=[payload.httpResponse])
     db.set(req_hash, mock)
     logger.info(f"Added new mock for: {req_hash}")
     return mock
 
 
-def get_mocks() -> Dict:
+def get_mocks() -> dict[str, MockedData]:
     return dict(db.all())
 
 

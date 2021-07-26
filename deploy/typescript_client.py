@@ -15,14 +15,16 @@ class TypescriptClient:
     new_version: str
     client: str = "typescript-node"
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.client_dir = self.project_dir.joinpath("clients").joinpath(self.client)
         self.docker_credentials_file = self.project_dir.joinpath(".docker_user_passwd")
-        self.user = run("id -u", quite=True).strip()
-        self.group = run("id -g", quite=True).strip()
+        if (user := run("id -u", quite=True)) is not None:
+            self.user = user.strip()
+        if (group := run("id -g", quite=True)) is not None:
+            self.group = group.strip()
         self.repo = Repo(self.project_dir)
 
-    def build(self):
+    def build(self) -> None:
         log.section(f"Start build {self.client} client")
         self._build_openapi()
         self._write_credentials_to_file()
@@ -31,11 +33,11 @@ class TypescriptClient:
         self._build_node_client()
         self._commit_generated_client()
 
-    def publish(self):
+    def publish(self) -> None:
         with context.cd(str(self.client_dir)):
             run("npm publish", msg="Publish npm package")
 
-    def _commit_generated_client(self):
+    def _commit_generated_client(self) -> None:
         if not self.repo.is_dirty():
             log.debug("Nothing to commit")
             return
@@ -49,12 +51,12 @@ class TypescriptClient:
             log.status("Adding commit with generated client", failed=True)
             raise Exception from e
 
-    def _build_node_client(self):
+    def _build_node_client(self) -> None:
         with context.cd(str(self.client_dir)):
             run("npx tsc", msg=f"Build {self.client} client")
             run("npx prettier --write src/** dist/**/*.js > /dev/null", msg=f"Prettier {self.client} sources")
 
-    def _clean_generated_files(self):
+    def _clean_generated_files(self) -> None:
         log.info("Clean obsolete files")
         files_to_delete = (
             self.docker_credentials_file,
@@ -67,7 +69,7 @@ class TypescriptClient:
         for file in files_to_delete:
             file.unlink() if file.is_file() else shutil.rmtree(file)
 
-    def _generate_node_client(self):
+    def _generate_node_client(self) -> None:
         run(
             f"docker run --rm -u {self.user}:{self.group} -v '{self.project_dir}:/local' \
             openapitools/openapi-generator-cli:latest generate -g {self.client} \
@@ -76,12 +78,12 @@ class TypescriptClient:
             msg=f"Generate {self.client}",
         )
 
-    def _write_credentials_to_file(self):
+    def _write_credentials_to_file(self) -> None:
         log.info("Save docker credentials")
         with open(str(self.docker_credentials_file), "w") as file:
             file.write(f"user:x:{self.user}:{self.group}:::/bin/bash")
 
-    def _build_openapi(self):
+    def _build_openapi(self) -> None:
         log.info("Save openApi file")
         import sys
 

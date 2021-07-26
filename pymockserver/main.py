@@ -16,18 +16,18 @@ app = FastAPI(
 
 
 @app.on_event("startup")
-def startup():
+def startup() -> None:
     db.connect()
     load_fixtures()
 
 
 @app.on_event("shutdown")
-def shutdown():
+def shutdown() -> None:
     db.close()
 
 
-app.include_router(meta.router, tags=["Meta"])
-app.include_router(mockserver.router, tags=["MockServer"])
+app.include_router(meta.router)
+app.include_router(mockserver.router)
 
 use_route_names_as_operation_ids(app)
 
