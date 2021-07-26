@@ -26,7 +26,7 @@ jobs:
           poetry --version
           poetry install
           poetry run python -m invoke generate-openapi
-          mkdir dist
+          mkdir -p dist
           mv openapi.json dist/openapi.json
       - name: Configure repo
         run: |
@@ -38,7 +38,7 @@ jobs:
         with:
           helmv3: 3.6.2
           command: |
-            mkdir dist
+            mkdir -p dist
             helmv3 package helm_v3/pymockserver/
             mv pymockserver-`git tag | tail -n 1`.tgz dist/helm_v3-pymockserver-`git tag | tail -n 1`.tgz
       - name: Publish GitHub Release
