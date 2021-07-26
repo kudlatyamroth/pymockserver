@@ -21,13 +21,9 @@ jobs:
       - name: Generate helm packages
         uses: stefanprodan/kube-tools@v1.5.0
         with:
-          helm: 2.17.0
-          helmv3: 3.6.0
+          helmv3: 3.6.2
           command: |
-            helm init --client-only
             mkdir dist
-            helm package helm_v2/pymockserver/
-            mv pymockserver-`git tag | tail -n 1`.tgz dist/helm_v2-pymockserver-`git tag | tail -n 1`.tgz
             helmv3 package helm_v3/pymockserver/
             mv pymockserver-`git tag | tail -n 1`.tgz dist/helm_v3-pymockserver-`git tag | tail -n 1`.tgz
       - name: Publish GitHub Release
