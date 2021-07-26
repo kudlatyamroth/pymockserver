@@ -25,7 +25,7 @@ jobs:
           python -m pip install -U poetry
           poetry --version
           poetry install
-          invoke generate-openapi
+          poetry run python -m invoke generate-openapi
           mkdir dist
           mv openapi.json dist/openapi.json
       - name: Configure repo
