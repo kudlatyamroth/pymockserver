@@ -4,6 +4,12 @@
 
 
 
+## 1.8.2 (2021-07-26)
+
+### Fix
+
+- get rid of error with fetching tags
+
 ## 1.8.1 (2021-07-26)
 
 ### Fix
