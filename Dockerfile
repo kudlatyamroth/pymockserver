@@ -1,24 +1,35 @@
-FROM tiangolo/uvicorn-gunicorn:python3.8-alpine3.10
+FROM python:3.9-alpine3.14
 
-RUN apk add --no-cache --virtual .build-deps gcc libc-dev make \
-    && apk add curl \
-    && apk del .build-deps gcc libc-dev make
+LABEL maintainer="Karol Fuksiewicz <kfuks2@gmail.com>"
+
+# dependencies
+# Copy using poetry.lock* in case it doesn't exist yet
+COPY ./pyproject.toml ./poetry.lock* /app/
 
 ENV PIP_NO_CACHE_DIR=off
 ENV PIP_DISABLE_PIP_VERSION_CHECK=on
 
-# Install Poetry
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | POETRY_HOME=/opt/poetry python && \
-    cd /usr/local/bin && \
-    ln -s /opt/poetry/bin/poetry && \
-    poetry config virtualenvs.create false
+RUN apk add --no-cache --virtual .build-deps gcc libc-dev make \
+    && apk add curl \
+    && curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | POETRY_HOME=/opt/poetry python \
+        && cd /usr/local/bin \
+        && ln -s /opt/poetry/bin/poetry \
+        && poetry config virtualenvs.create false \
+    && cd /app/ \
+    && poetry install --no-root --no-dev \
+    && apk del .build-deps gcc libc-dev make
 
-# Copy using poetry.lock* in case it doesn't exist yet
-COPY ./pyproject.toml ./poetry.lock* /app/
+# run setup
+COPY ./start.sh /start.sh
+RUN chmod +x /start.sh
 
-RUN poetry install --no-root --no-dev
+COPY ./gunicorn_conf.py /gunicorn_conf.py
+
+WORKDIR /app/
 
 COPY pymockserver /app/pymockserver
+
+ENV PYTHONPATH=/app:$PYTHONPATH
 
 EXPOSE 80
 
@@ -29,3 +40,6 @@ ENV TIMEOUT 300
 ENV ACCESS_LOG ''
 ENV GUNICORN_CMD_ARGS '--max-requests=300 --max-requests-jitter=300'
 ENV MODULE_NAME 'pymockserver.main'
+ENV PRELOAD 1
+
+CMD ["/start.sh"]
