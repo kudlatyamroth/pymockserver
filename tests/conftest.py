@@ -2,7 +2,7 @@ import pytest
 from mergedeep import merge
 from starlette.testclient import TestClient
 
-from pymockserver import database  # noqa
+from pymockserver.adapters import diskcache
 
 
 @pytest.fixture(scope="session")
@@ -21,7 +21,7 @@ def client(app):
 @pytest.fixture(scope="function")
 def cleanup(app):
     yield
-    database.db.clear()
+    diskcache.db.clear()
 
 
 @pytest.fixture(scope="function")
