@@ -155,14 +155,6 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
-name = "diskcache"
-version = "5.2.1"
-description = "Disk Cache -- Disk and file backed persistent cache."
-category = "main"
-optional = false
-python-versions = ">=3"
-
-[[package]]
 name = "distlib"
 version = "0.3.2"
 description = "Distribution utilities"
@@ -744,7 +736,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "04ee543c3ccf9ad6ac04712d4738eab755d4ec095d1f61b8b1478db025a98129"
+content-hash = "8a84f0cb7713dcbc725a323e8e23d565147bacfa8849a22c65f60b74684c82c5"
 
 [metadata.files]
 appdirs = [
@@ -802,10 +794,6 @@ commitizen = [
 decli = [
     {file = "decli-0.5.2-py3-none-any.whl", hash = "sha256:d3207bc02d0169bf6ed74ccca09ce62edca0eb25b0ebf8bf4ae3fb8333e15ca0"},
     {file = "decli-0.5.2.tar.gz", hash = "sha256:f2cde55034a75c819c630c7655a844c612f2598c42c21299160465df6ad463ad"},
-]
-diskcache = [
-    {file = "diskcache-5.2.1-py3-none-any.whl", hash = "sha256:6e8137c778fd2752b93c8a8f944e939b3665d645b46774d8537dd3528ac3baa1"},
-    {file = "diskcache-5.2.1.tar.gz", hash = "sha256:1805acd5868ac10ad547208951a1190a0ab7bbff4e70f9a07cde4dbdfaa69f64"},
 ]
 distlib = [
     {file = "distlib-0.3.2-py2.py3-none-any.whl", hash = "sha256:23e223426b28491b1ced97dc3bbe183027419dfc7982b4fa2f05d5f3ff10711c"},
