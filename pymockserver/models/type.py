@@ -1,8 +1,16 @@
-from typing import Any, Union
+from enum import Enum
+from typing import Any, Optional, Union
 
 from pydantic import BaseModel, Field
 
 QueryStrings = dict[str, list[str]]
+HeadersType = dict[str, str]
+BodyType = Union[bool, str, int, dict[Any, Any], list[Any], None]
+
+
+class MatchEnum(str, Enum):
+    exact = "exact"
+    partially = "partially"
 
 
 class HttpRequest(BaseModel):
@@ -17,6 +25,23 @@ class HttpRequest(BaseModel):
             "name": ["John"],
             "age": ["25", "30"],
         },
+    )
+    headers: dict[str, str] = Field(
+        None,
+        description="Headers that would match in request",
+        example={
+            "x-user": "John Doe",
+        },
+    )
+    body: Union[bool, str, int, dict[Any, Any], list[Any], None] = Field(
+        "",
+        description="Body that will be matched against request",
+        example='{"users":["John","Dave"]}',
+    )
+    match_body_mode: Optional[MatchEnum] = Field(
+        None,
+        description="Specify mode with witch body will be matched in request",
+        example="partially",
     )
 
 
@@ -38,7 +63,7 @@ class HttpResponse(BaseModel):
         },
     )
     body: Union[bool, str, int, dict[Any, Any], list[Any], None] = Field(
-        "", description="Body that will be returned", example='{"users":["John","Dave"]}'
+        None, description="Body that will be returned", example='{"users":["John","Dave"]}'
     )
     remaining_times: int = Field(
         -1,
@@ -56,9 +81,4 @@ class CreatePayload(BaseModel):
     httpResponse: HttpResponse
 
 
-MockList = list[HttpResponse]
-
-
-class MockedData(BaseModel):
-    httpRequest: HttpRequest
-    httpResponse: MockList
+MockedData = list[list[HttpRequest, HttpResponse]]
