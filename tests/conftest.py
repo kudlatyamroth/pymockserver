@@ -2,7 +2,7 @@ import pytest
 from mergedeep import merge
 from starlette.testclient import TestClient
 
-from pymockserver.adapters import diskcache
+from pymockserver.adapters import shared_memory as db_adapter
 
 
 @pytest.fixture(scope="session")
@@ -21,7 +21,7 @@ def client(app):
 @pytest.fixture(scope="function")
 def cleanup(app):
     yield
-    diskcache.db.clear()
+    db_adapter.db.clear()
 
 
 @pytest.fixture(scope="function")

@@ -12,9 +12,6 @@ web_concurrency_str = os.getenv("WEB_CONCURRENCY", None)
 host = os.getenv("HOST", "0.0.0.0")
 port = os.getenv("PORT", "80")
 bind_env = os.getenv("BIND", None)
-preload_env = os.getenv("PRELOAD", False)
-if preload_env:
-    preload_env = True
 use_loglevel = os.getenv("LOG_LEVEL", "info")
 if bind_env:
     use_bind = bind_env
@@ -66,6 +63,5 @@ log_data = {
     "use_max_workers": use_max_workers,
     "host": host,
     "port": port,
-    "preload_app": preload_env,
 }
 print(json.dumps(log_data))
