@@ -5,7 +5,7 @@ from typing import Any
 import yaml
 
 from pymockserver.logger import logger
-from pymockserver.managers import set_mocks
+from pymockserver.models.manager import set_mocks
 from pymockserver.models.type import MockedData
 from pymockserver.utils import request_hash
 
