@@ -4,6 +4,19 @@
 
 
 
+## 1.9.0 (2021-07-27)
+
+### Feat
+
+- do not include version in helm package in release
+- do not create volume storage for diskcache
+- remove diskcache from dependency and remove its adapter
+- add shared memory adapter and switch to it
+- move logger, fixture and utils to tool module
+- move manager to models module
+- rename database to diskcache as it truly is and move it to adapters module
+- move model types to models package
+
 ## 1.8.3 (2021-07-26)
 
 ### Fix
