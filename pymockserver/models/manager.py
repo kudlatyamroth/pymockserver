@@ -1,6 +1,6 @@
 from typing import Optional, cast
 
-from pymockserver.adapters.diskcache import db
+from pymockserver.adapters.shared_memory import db
 from pymockserver.models.type import CreatePayload, HttpResponse, MockedData
 from pymockserver.tools.logger import logger
 
