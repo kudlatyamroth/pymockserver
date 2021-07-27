@@ -1,8 +1,8 @@
 from typing import Optional, cast
 
 from pymockserver.adapters.diskcache import db
-from pymockserver.logger import logger
 from pymockserver.models.type import CreatePayload, HttpResponse, MockedData
+from pymockserver.tools.logger import logger
 
 mocks: dict[str, MockedData] = {}
 

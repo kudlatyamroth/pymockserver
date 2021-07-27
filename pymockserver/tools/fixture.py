@@ -4,10 +4,10 @@ from typing import Any
 
 import yaml
 
-from pymockserver.logger import logger
 from pymockserver.models.manager import set_mocks
 from pymockserver.models.type import MockedData
-from pymockserver.utils import request_hash
+from pymockserver.tools.logger import logger
+from pymockserver.tools.utils import request_hash
 
 FIXTURES_DIR = Path("/etc/fixtures")
 
