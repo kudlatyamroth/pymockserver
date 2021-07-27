@@ -7,7 +7,7 @@ from starlette.requests import Request
 from starlette.responses import Response
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_404_NOT_FOUND
 
-from pymockserver import managers
+from pymockserver.models import manager
 from pymockserver.models.type import CreatePayload, HttpRequest, MockedData
 from pymockserver.utils import query_params_to_http_qs, request_hash
 
@@ -22,7 +22,7 @@ async def add_mock(body: CreatePayload) -> dict[str, str]:
     If route is already mocked it will add it to queue.
     """
     req_hash = request_hash(body.httpRequest)
-    managers.add_mock(req_hash, body)
+    manager.add_mock(req_hash, body)
     return {"status": "ok"}
 
 
@@ -31,7 +31,7 @@ async def get_all_mocks() -> dict[str, MockedData]:
     """
     Get all mocked routes
     """
-    return managers.get_mocks()
+    return manager.get_mocks()
 
 
 @router.delete("/mockserver", status_code=HTTP_200_OK)
@@ -40,7 +40,7 @@ async def delete_mock(http_request: HttpRequest) -> dict[str, Union[Optional[Moc
     Delete mock specified in request
     """
     req_hash = request_hash(http_request)
-    return {"removed": managers.delete_mock(req_hash), "mocked": managers.get_mocks()}
+    return {"removed": manager.delete_mock(req_hash), "mocked": manager.get_mocks()}
 
 
 @router.delete("/mockserver/reset", status_code=HTTP_200_OK)
@@ -48,7 +48,7 @@ async def clear_all_mocks() -> dict[str, str]:
     """
     Delete all mocked routes
     """
-    managers.purge_mocks()
+    manager.purge_mocks()
     return {"status": "ok"}
 
 
@@ -65,11 +65,11 @@ async def mock_response(*, url_path: Optional[str] = None, request: Request, res
     )
 
     req_hash = request_hash(http_request)
-    mock = managers.get_mock(req_hash)
+    mock = manager.get_mock(req_hash)
     if mock is None:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Not found")
 
-    mocked_response = managers.decrease_remaining_times(mock, req_hash)
+    mocked_response = manager.decrease_remaining_times(mock, req_hash)
     if mocked_response.headers:
         for header, value in mocked_response.headers.items():
             response.headers[header] = value
