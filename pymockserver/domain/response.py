@@ -78,19 +78,22 @@ def retrieve_matching_response(mocks: MockedData, request: HttpRequest, req_hash
     if resp_id is None or response is None:
         return None
 
-    logger.info("mock matched")
+    logger.info("Found matched mock")
     remaining_times = response.decrease_remaining_times()
     mocks[resp_id].response = response
+
+    logger.info(
+        f"Decreased remaining times in first mocked response for hash: {req_hash} with request: {mocks[resp_id].request.print()}"
+    )
 
     if remaining_times == 0 and len(mocks) <= 1:
         manager.delete_mock(req_hash)
 
     if remaining_times == 0 and len(mocks) > 1:
+        logger.info(f"Delete first mocked response for hash: {req_hash} with request: {mocks[resp_id].request.print()}")
         del mocks[resp_id]
         manager.set_mocks(req_hash, mocks)
-        logger.info(f"Deleted first mocked response for hash: {req_hash}")
 
-    logger.info(f"Decreased remaining times in first mocked response for hash: {req_hash}")
     return response
 
 
