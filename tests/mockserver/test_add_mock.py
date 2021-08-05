@@ -30,11 +30,18 @@ def test_minimal_request_to_add_mock(client):
 @pytest.mark.usefixtures("cleanup")
 def test_largest_request_to_add_mock(client):
     http_request = {
-        "method": "GET",
+        "method": "POST",
         "path": "/users",
         "queryStringParameters": {
             "name": ["John"],
         },
+        "headers": {
+            "x-header": "secure",
+        },
+        "body": {
+            "users": ["John Doe"],
+        },
+        "match_body_mode": "partially",
     }
     http_response = {
         "statusCode": 201,
@@ -58,9 +65,71 @@ def test_largest_request_to_add_mock(client):
     assert add_response.status_code == 201
     assert add_response.json() == {"status": "ok"}
 
-    mock_response = client.get(http_request.get("path"), params={"name": "John"})
+    mock_response = client.post(
+        url=http_request.get("path"),
+        params={"name": "John"},
+        json={"users": ["John Doe"]},
+        headers={"x-header": "secure"},
+    )
     assert mock_response.status_code == 201
     assert mock_response.json() == http_response.get("body")
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        [
+            {
+                "users": ["John Doe", "John Dave"],
+            }
+        ],
+        {
+            "users": ["John Doe", "John Dave"],
+        },
+        ["users"],
+        "a:300",
+        "",
+        None,
+        True,
+        False,
+        1,
+        0,
+        300,
+        -300,
+    ],
+)
+@pytest.mark.parametrize("method", ["POST", "PUT", "PATCH"])
+@pytest.mark.usefixtures("cleanup")
+def test_request_body_could_be_anything(client, body, method):
+    methods = [
+        "POST",
+        "PUT",
+        "PATCH",
+    ]
+    path = "/users"
+    http_request = {
+        "method": method,
+        "path": path,
+        "body": body,
+    }
+
+    add_response = client.post(
+        "/mockserver",
+        json={
+            "httpRequest": http_request,
+            "httpResponse": {},
+        },
+    )
+    assert add_response.status_code == 201
+    assert add_response.json() == {"status": "ok"}
+
+    methods.remove(method)
+    for fail_method in methods:
+        mock_response = client.request(fail_method, url=path, json=body)
+        assert mock_response.status_code == 404
+
+    mock_response = client.request(method, url=path, json=body)
+    assert mock_response.status_code == 200
 
 
 @pytest.mark.parametrize(
