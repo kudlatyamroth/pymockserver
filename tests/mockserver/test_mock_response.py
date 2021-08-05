@@ -52,6 +52,32 @@ def test_should_response_with_given_headers(client, create_mock):
 
 
 @pytest.mark.usefixtures("cleanup")
+def test_should_response_only_with_given_body(client, create_mock):
+    path = "/users"
+
+    create_mock(
+        {
+            "httpRequest": {"method": "POST", "path": path, "body": "test"},
+            "httpResponse": {
+                "remainingTimes": 1,
+            },
+        }
+    )
+
+    mock_response = client.post(path, data="test")
+    assert mock_response.status_code == 200
+
+    mock_response = client.get(path)
+    assert mock_response.status_code == 404
+
+    mock_response = client.post(path)
+    assert mock_response.status_code == 404
+
+    mock_response = client.post(path, data="test2")
+    assert mock_response.status_code == 404
+
+
+@pytest.mark.usefixtures("cleanup")
 def test_should_response_only_given_times(client, create_mock):
     path = "/users"
 
