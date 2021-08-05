@@ -2,6 +2,7 @@ export * from "./createPayload";
 export * from "./hTTPValidationError";
 export * from "./httpRequest";
 export * from "./httpResponse";
+export * from "./matchEnum";
 export * from "./validationError";
 
 import localVarRequest = require("request");
@@ -10,6 +11,7 @@ import { CreatePayload } from "./createPayload";
 import { HTTPValidationError } from "./hTTPValidationError";
 import { HttpRequest } from "./httpRequest";
 import { HttpResponse } from "./httpResponse";
+import { MatchEnum } from "./matchEnum";
 import { ValidationError } from "./validationError";
 
 /* tslint:disable:no-unused-variable */
@@ -24,7 +26,9 @@ let primitives = [
   "any",
 ];
 
-let enumsMap: { [index: string]: any } = {};
+let enumsMap: { [index: string]: any } = {
+  MatchEnum: MatchEnum,
+};
 
 let typeMap: { [index: string]: any } = {
   CreatePayload: CreatePayload,
