@@ -4,10 +4,10 @@ from typing import Any
 
 import yaml
 
-from pymockserver.models.manager import set_mocks
-from pymockserver.models.type import MockedData
+from pymockserver.domain.request import request_hash
+from pymockserver.models.manager import add_mock
+from pymockserver.models.type import CreatePayload
 from pymockserver.tools.logger import logger
-from pymockserver.tools.utils import request_hash
 
 FIXTURES_DIR = Path("/etc/fixtures")
 
@@ -53,7 +53,7 @@ def load_json_fixture(fixture_file: Path) -> None:
 
 def add_fixtures(fixtures: Any) -> None:
     for fixture in fixtures:
-        payload = MockedData.parse_obj(fixture)
+        payload = CreatePayload.parse_obj(fixture)
         req_hash = request_hash(payload.httpRequest)
 
-        set_mocks(req_hash, payload)
+        add_mock(req_hash=req_hash, payload=payload)

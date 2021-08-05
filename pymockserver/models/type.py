@@ -1,3 +1,4 @@
+import json
 from enum import Enum
 from typing import Any, Optional, Union
 
@@ -44,6 +45,9 @@ class HttpRequest(BaseModel):
         example="partially",
     )
 
+    def pretty_json(self) -> str:
+        return json.dumps(self.dict(), indent=2)
+
 
 class HttpResponse(BaseModel):
     status_code: int = Field(
@@ -75,10 +79,25 @@ class HttpResponse(BaseModel):
     )
     delay: int = Field(0, description="How much milliseconds wait until response", example="500", ge=0)
 
+    def decrease_remaining_times(self) -> int:
+        if self.remaining_times == -1:
+            return self.remaining_times
+        if self.remaining_times > 1:
+            self.remaining_times -= 1
+            return self.remaining_times
+        if 0 <= self.remaining_times <= 1:
+            return 0
+        return self.remaining_times
+
 
 class CreatePayload(BaseModel):
     httpRequest: HttpRequest
     httpResponse: HttpResponse
 
 
-MockedData = list[list[HttpRequest, HttpResponse]]
+class MockData(BaseModel):
+    request: HttpRequest
+    response: HttpResponse
+
+
+MockedData = list[MockData]

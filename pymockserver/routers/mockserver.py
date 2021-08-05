@@ -7,9 +7,10 @@ from starlette.requests import Request
 from starlette.responses import Response
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_404_NOT_FOUND
 
+from pymockserver.domain.request import request_hash, request_to_model
+from pymockserver.domain.response import get_mocked_response
 from pymockserver.models import manager
 from pymockserver.models.type import CreatePayload, HttpRequest, MockedData
-from pymockserver.tools.utils import query_params_to_http_qs, request_hash
 
 router = APIRouter(tags=["MockServer"])
 
@@ -58,18 +59,12 @@ async def clear_all_mocks() -> dict[str, str]:
 @router.put("{url_path:path}", include_in_schema=False)
 @router.delete("{url_path:path}", include_in_schema=False)
 async def mock_response(*, url_path: Optional[str] = None, request: Request, response: Response) -> Any:
-    http_request = HttpRequest(
-        method=request.method,
-        path=url_path,
-        queryStringParameters=query_params_to_http_qs(request.query_params.multi_items()),
-    )
+    http_request = await request_to_model(url_path, request)
+    mocked_response = await get_mocked_response(http_request)
 
-    req_hash = request_hash(http_request)
-    mock = manager.get_mock(req_hash)
-    if mock is None:
-        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Not found")
+    if mocked_response is None:
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Not found matching response")
 
-    mocked_response = manager.decrease_remaining_times(mock, req_hash)
     if mocked_response.headers:
         for header, value in mocked_response.headers.items():
             response.headers[header] = value
