@@ -38,7 +38,7 @@ ENV WEB_CONCURRENCY 4
 ENV KEEP_ALIVE 300
 ENV TIMEOUT 300
 ENV ACCESS_LOG ''
-ENV GUNICORN_CMD_ARGS '--max-requests=300 --max-requests-jitter=300'
+ENV GUNICORN_CMD_ARGS '--preload --max-requests=300 --max-requests-jitter=300'
 ENV MODULE_NAME 'pymockserver.main'
 ENV PRELOAD 1
 
