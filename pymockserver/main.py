@@ -2,8 +2,8 @@ import uvicorn
 from fastapi import FastAPI
 
 from pymockserver.adapters.shared_memory import db
+from pymockserver.domain.fixture import load_fixtures
 from pymockserver.routers import meta, mockserver
-from pymockserver.tools.fixture import load_fixtures
 from pymockserver.tools.utils import use_route_names_as_operation_ids
 
 __version__ = "1.9.0"
