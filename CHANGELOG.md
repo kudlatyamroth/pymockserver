@@ -4,6 +4,18 @@
 
 
 
+## 2.0.0 (2021-08-05)
+
+### Feat
+
+- handle partially match on headers
+- handle exact and partially match on body
+- add headers and body to HttpRequest type
+
+### BREAKING CHANGE
+
+- changing structure of fixtures and change in way it matches requests
+
 ## 1.9.0 (2021-07-27)
 
 ### Feat
