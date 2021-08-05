@@ -26,12 +26,12 @@ def add_mock(req_hash: str, payload: CreatePayload) -> MockedData:
     mock = db.get(req_hash)
     if mock:
         mock.append(MockData(request=payload.httpRequest, response=payload.httpResponse))
-        logger.info(f"Append mock to hash: {req_hash}")
+        logger.info(f"Append mock to hash: {req_hash} with request: {payload.httpRequest.print()}")
         db.set(req_hash, mock)
         return cast(MockedData, mock)
     mock = [MockData(request=payload.httpRequest, response=payload.httpResponse)]
     db.set(req_hash, mock)
-    logger.info(f"Added new mock for: {req_hash}")
+    logger.info(f"Added new mock for: {req_hash} with request: {payload.httpRequest.print()}")
     return mock
 
 

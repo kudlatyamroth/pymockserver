@@ -1,0 +1,26 @@
+- httpRequest:
+    method: GET
+    path: /api/v2/currency-policies
+    queryStringParameters:
+  httpResponse:
+    statusCode: 200
+    body:
+      data:
+        currencyRates:
+          - currencyCode: "PLN"
+            currencyRate: "4.194753000000"
+            roundingPolicy: "ROUND_HALF_UP"
+        allowedCurrencies:
+          - "EUR"
+          - "GBP"
+          - "JPY"
+          - "PLN"
+          - "USD"
+        sellerAllowedCurrencies:
+          - "EUR"
+          - "GBP"
+          - "PLN"
+        sellerNotAllowedCurrencies:
+          - "JPY"
+          - "USD"
+        currencyConversionFee: "1.0249"

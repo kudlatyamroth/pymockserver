@@ -4,6 +4,18 @@
 
 
 
+## 2.0.2 (2021-08-05)
+
+### Fix
+
+- preload application in docker
+
+## 2.0.1 (2021-08-05)
+
+### Fix
+
+- change deprecated use of logger warn method to warning
+
 ## 2.0.0 (2021-08-05)
 
 ### Feat
