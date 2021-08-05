@@ -45,7 +45,7 @@ class HttpRequest(BaseModel):
         example="partially",
     )
 
-    def pretty_json(self) -> str:
+    def print(self) -> str:
         return json.dumps(self.dict(), indent=2)
 
 
