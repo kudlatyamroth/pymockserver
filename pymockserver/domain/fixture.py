@@ -24,7 +24,7 @@ def load_fixtures() -> None:
 
 def check_file_extension(fixture_file: Path) -> bool:
     if fixture_file.suffix not in [".json", ".yaml"]:
-        logger.warn("Wrong fixture file extension. Only json and yaml are handled.")
+        logger.warning("Wrong fixture file extension. Only json and yaml are handled.")
         return False
     return True
 

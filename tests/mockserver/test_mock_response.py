@@ -100,6 +100,26 @@ def test_should_response_only_given_times(client, create_mock):
 
 
 @pytest.mark.usefixtures("cleanup")
+def test_should_response_infinite_times(client, create_mock):
+    path = "/users"
+
+    create_mock(
+        {
+            "httpRequest": {
+                "path": path,
+            },
+            "httpResponse": {
+                "remainingTimes": -1,
+            },
+        }
+    )
+
+    for x in range(5):
+        mock_response = client.get(path)
+        assert mock_response.status_code == 200
+
+
+@pytest.mark.usefixtures("cleanup")
 def test_should_response_with_first_mock_and_then_next(client, create_mock):
     path = "/users"
 
