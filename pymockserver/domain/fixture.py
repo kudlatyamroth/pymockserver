@@ -53,7 +53,7 @@ def load_json_fixture(fixture_file: Path) -> None:
 
 def add_fixtures(fixtures: Any) -> None:
     for fixture in fixtures:
-        payload = CreatePayload.parse_obj(fixture)
+        payload = CreatePayload.model_validate(fixture)
         req_hash = request_hash(payload.httpRequest)
 
         add_mock(req_hash=req_hash, payload=payload)

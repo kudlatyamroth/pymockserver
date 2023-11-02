@@ -21,7 +21,7 @@ def test_should_delete_only_one_mock(client, create_mock):
         }
     )
 
-    del_response = client.delete("/mockserver", json=mock.get("data").get("httpRequest"))
+    del_response = client.request("DELETE", "/mockserver", json=mock.get("data").get("httpRequest"))
     assert del_response.status_code == 200
 
     mock_response = client.get(first_path)
@@ -52,7 +52,7 @@ def test_should_delete_only_mock_without_qs(client, create_mock):
         }
     )
 
-    del_response = client.delete("/mockserver", json=mock.get("data").get("httpRequest"))
+    del_response = client.request("DELETE", "/mockserver", json=mock.get("data").get("httpRequest"))
     assert del_response.status_code == 200
 
     mock_response = client.get(path, params=query_params)
@@ -83,7 +83,7 @@ def test_should_delete_only_mock_with_qs(client, create_mock):
         }
     )
 
-    del_response = client.delete("/mockserver", json=mock.get("data").get("httpRequest"))
+    del_response = client.request("DELETE", "/mockserver", json=mock.get("data").get("httpRequest"))
     assert del_response.status_code == 200
 
     mock_response = client.get(path)
@@ -129,7 +129,7 @@ def test_should_delete_only_mock_with_get_method(client, create_mock):
         }
     )
 
-    del_response = client.delete("/mockserver", json=mock.get("data").get("httpRequest"))
+    del_response = client.request("DELETE", "/mockserver", json=mock.get("data").get("httpRequest"))
     assert del_response.status_code == 200
 
     mock_response = client.post(path)
@@ -159,7 +159,7 @@ def test_should_not_delete_anything(client, create_mock):
     )
 
     mock["data"]["httpRequest"]["path"] = second_path
-    del_response = client.delete("/mockserver", json=mock.get("data").get("httpRequest"))
+    del_response = client.request("DELETE", "/mockserver", json=mock.get("data").get("httpRequest"))
     assert del_response.status_code == 200
 
     mock_response = client.get(first_path)
@@ -186,7 +186,7 @@ def test_should_delete_everything(client, create_mock):
         }
     )
 
-    purge_response = client.delete("/mockserver/reset")
+    purge_response = client.request("DELETE", "/mockserver/reset")
     assert purge_response.status_code == 200
 
     mock_response = client.get(first_path)

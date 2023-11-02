@@ -3,7 +3,7 @@ from threading import Lock
 from typing import Any, Iterable, Optional
 
 manager = Manager()
-shared_memory: dict[str, Any] = manager.dict()
+shared_memory: dict[str, Any] = manager.dict()  # type: ignore
 lock: Lock = manager.Lock()
 
 
