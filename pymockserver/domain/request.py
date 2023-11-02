@@ -28,6 +28,9 @@ async def decode_request(request: Request) -> Any:
 
 def query_params_to_http_qs(qs: list[tuple[str, str]]) -> QueryStrings:
     query_params: QueryStrings = {}
+    if query_params is None:
+        return query_params
+
     for param in qs:
         if qp := query_params.get(param[0]):
             qp.append(param[1])

@@ -1,4 +1,4 @@
-FROM python:3.9-alpine3.14
+FROM python:3.11-alpine
 
 LABEL maintainer="Karol Fuksiewicz <kfuks2@gmail.com>"
 
@@ -9,15 +9,15 @@ COPY ./pyproject.toml ./poetry.lock* /app/
 ENV PIP_NO_CACHE_DIR=off
 ENV PIP_DISABLE_PIP_VERSION_CHECK=on
 
-RUN apk add --no-cache --virtual .build-deps gcc libc-dev make \
+RUN apk add --no-cache --virtual .build-deps gcc libc-dev libffi-dev make \
     && apk add curl \
-    && curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | POETRY_HOME=/opt/poetry python \
+    && curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python \
         && cd /usr/local/bin \
         && ln -s /opt/poetry/bin/poetry \
         && poetry config virtualenvs.create false \
     && cd /app/ \
     && poetry install --no-root --no-dev \
-    && apk del .build-deps gcc libc-dev make
+    && apk del .build-deps gcc libc-dev libffi-dev make
 
 # run setup
 COPY ./start.sh /start.sh

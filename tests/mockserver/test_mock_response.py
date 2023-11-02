@@ -64,7 +64,7 @@ def test_should_response_only_with_given_body(client, create_mock):
         }
     )
 
-    mock_response = client.post(path, data="test")
+    mock_response = client.post(path, content="test")
     assert mock_response.status_code == 200
 
     mock_response = client.get(path)
@@ -73,7 +73,7 @@ def test_should_response_only_with_given_body(client, create_mock):
     mock_response = client.post(path)
     assert mock_response.status_code == 404
 
-    mock_response = client.post(path, data="test2")
+    mock_response = client.post(path, content="test2")
     assert mock_response.status_code == 404
 
 
