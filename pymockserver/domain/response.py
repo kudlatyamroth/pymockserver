@@ -18,7 +18,7 @@ def is_partially_match_dict(body: Any, mock: dict[str, Any]) -> bool:
 def is_partially_match_list(body: Any, mock: list[Any]) -> bool:
     for value in mock:
         if not isinstance(mock, (str, int, float, bool, bytes)) and not any(
-            [is_partially_match(x, value) for x in cast(list[Any], body)]
+            is_partially_match(x, value) for x in cast(list[Any], body)
         ):
             return False
         if value not in body:
