@@ -3,7 +3,6 @@ import json
 import sys
 from pathlib import Path
 
-
 project_dir = Path(__file__).parent
 
 

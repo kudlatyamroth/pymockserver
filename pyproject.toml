@@ -19,15 +19,13 @@ httptools = "^0.6.1"
 
 [tool.poetry.group.dev.dependencies]
 httpx = "^0.25.0"
-black = "^23.10.1"
-flake8 = "^6.1.0"
 mypy = "^1.6.1"
 pytest = "^7.4.3"
 mergedeep = "^1.3.4"
 commitizen = "^3.12.0"
-isort = "^5.12.0"
 types-PyYAML = "^6.0.12"
 setuptools = "^68.2.2"
+ruff = "^0.1.4"
 
 [tool.commitizen]
 version_provider = "poetry"
@@ -42,15 +40,27 @@ version_files = [
     "clients/typescript-node/package.json:version",
 ]
 
-[tool.black]
+[tool.ruff]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "C",  # flake8-comprehensions
+    "B",  # flake8-bugbear
+    "TID",  # flake8-tidy-imports
+    "SIM",  # flake8-simplify
+    "RET",  # flake8-return
+    "ASYNC",  # flake8-async
+    "UP",  # pyupgrade
+]
+ignore = [
+    "E501",  # line too long, handled by black
+]
 line-length = 120
 
-[tool.isort]
-multi_line_output = 3
-include_trailing_comma = true
-force_grid_wrap = 0
-combine_as_imports = true
-line_length = 120
+[tool.ruff.lint.isort]
+combine-as-imports = true
 
 [tool.mypy]
 python_version = "3.11"

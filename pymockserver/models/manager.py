@@ -1,4 +1,4 @@
-from typing import Optional, cast
+from typing import cast
 
 from pymockserver.adapters.shared_memory import db
 from pymockserver.models.type import CreatePayload, MockData, MockedData
@@ -7,7 +7,7 @@ from pymockserver.tools.logger import logger
 mocks: dict[str, MockedData] = {}
 
 
-def get_mock(req_hash: str) -> Optional[MockedData]:
+def get_mock(req_hash: str) -> MockedData | None:
     mock = db.get(req_hash)
     if mock is None:
         logger.info(f"Mock not found: {req_hash}")
@@ -39,7 +39,7 @@ def get_mocks() -> dict[str, MockedData]:
     return dict(db.all())
 
 
-def delete_mock(req_hash: str) -> Optional[MockedData]:
+def delete_mock(req_hash: str) -> MockedData | None:
     logger.info(f"Deleting mocks for hash: {req_hash}")
     return db.delete(req_hash)
 

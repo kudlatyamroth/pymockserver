@@ -1,12 +1,12 @@
 import json
-from typing import Any, Optional
+from typing import Any
 
 from starlette.requests import Request
 
 from pymockserver.models.type import HttpRequest, QueryStrings
 
 
-async def request_to_model(url_path: Optional[str], request: Request) -> HttpRequest:
+async def request_to_model(url_path: str | None, request: Request) -> HttpRequest:
     request_body = await decode_request(request)
     query_params = query_params_to_http_qs(request.query_params.multi_items())
 
@@ -39,7 +39,7 @@ def query_params_to_http_qs(qs: list[tuple[str, str]]) -> QueryStrings:
     return query_params
 
 
-def serialize_query_string(qs: Optional[QueryStrings]) -> str:
+def serialize_query_string(qs: QueryStrings | None) -> str:
     if qs is None:
         return ""
     sorted_dict = dict(sorted({key: ",".join(sorted(value)) for key, value in qs.items()}.items()))

@@ -1,6 +1,6 @@
+import asyncio
 import json
-import time
-from typing import Any, Optional, Union
+from typing import Any
 
 from fastapi import APIRouter, HTTPException
 from starlette.requests import Request
@@ -36,7 +36,7 @@ async def get_all_mocks() -> dict[str, MockedData]:
 
 
 @router.delete("/mockserver", status_code=HTTP_200_OK)
-async def delete_mock(http_request: HttpRequest) -> dict[str, Union[Optional[MockedData], dict[str, MockedData]]]:
+async def delete_mock(http_request: HttpRequest) -> dict[str, dict[str, MockedData] | MockedData | None]:
     """
     Delete mock specified in request
     """
@@ -58,7 +58,7 @@ async def clear_all_mocks() -> dict[str, str]:
 @router.get("{url_path:path}", include_in_schema=False)
 @router.put("{url_path:path}", include_in_schema=False)
 @router.delete("{url_path:path}", include_in_schema=False)
-async def mock_response(*, url_path: Optional[str] = None, request: Request, response: Response) -> Any:
+async def mock_response(*, url_path: str | None = None, request: Request, response: Response) -> Any:
     http_request = await request_to_model(url_path, request)
     mocked_response = await get_mocked_response(http_request)
 
@@ -70,11 +70,11 @@ async def mock_response(*, url_path: Optional[str] = None, request: Request, res
             response.headers[header] = value
 
     if mocked_response.delay:
-        time.sleep(mocked_response.delay / 1000)
+        await asyncio.sleep(mocked_response.delay / 1000)
 
     response.status_code = mocked_response.status_code
     try:
-        if not isinstance(mocked_response.body, (str, bytes, bytearray)):
+        if not isinstance(mocked_response.body, str | bytes | bytearray):
             raise TypeError("Body is not json string")
         return json.loads(mocked_response.body)
     except (json.JSONDecodeError, TypeError):
