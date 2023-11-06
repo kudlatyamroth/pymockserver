@@ -1,15 +1,18 @@
 .PHONY: lint lint-fix test
 
 lint:
-	poetry run flake8
-	poetry run isort --check-only pymockserver tests
-	poetry run black --check pymockserver tests
+	poetry run ruff check .
+	poetry run ruff format --check .
 	poetry run mypy
 
 lint-fix:
-	poetry run isort pymockserver tests
-	poetry run black pymockserver tests
-	poetry run flake8
+	poetry run ruff check --fix --exit-zero .
+	poetry run ruff format .
+	poetry run mypy
+
+lint-unsafe-fix:
+	poetry run ruff check --fix --unsafe-fixes --exit-zero .
+	poetry run ruff format .
 	poetry run mypy
 
 test:

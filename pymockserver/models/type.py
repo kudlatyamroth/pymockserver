@@ -1,12 +1,12 @@
 import json
 from enum import Enum
-from typing import Any, Optional, Union
+from typing import Any
 
 from pydantic import BaseModel, Field
 
 QueryStrings = dict[str, list[str]] | None
 HeadersType = dict[str, str]
-BodyType = Union[bool, str, int, dict[Any, Any], list[Any], None]
+BodyType = bool | str | int | dict[Any, Any] | list[Any] | None
 
 
 class MatchEnum(str, Enum):
@@ -42,12 +42,12 @@ class HttpRequest(BaseModel):
             ]
         },
     )
-    body: Union[bool, str, int, dict[Any, Any], list[Any], None] = Field(
+    body: BodyType = Field(
         "",
         description="Body that will be matched against request",
         json_schema_extra={"examples": ['{"users":["John","Dave"]}']},
     )
-    match_body_mode: Optional[MatchEnum] = Field(
+    match_body_mode: MatchEnum | None = Field(
         None,
         description="Specify mode with witch body will be matched in request",
         json_schema_extra={"examples": ["partially"]},
@@ -78,7 +78,7 @@ class HttpResponse(BaseModel):
             ]
         },
     )
-    body: Union[bool, str, int, dict[Any, Any], list[Any], None] = Field(
+    body: BodyType = Field(
         None,
         description="Body that will be returned",
         json_schema_extra={"examples": ['{"users":["John","Dave"]}']},

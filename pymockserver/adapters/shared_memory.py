@@ -1,6 +1,7 @@
+from collections.abc import Iterable
 from multiprocessing import Manager
 from threading import Lock
-from typing import Any, Iterable, Optional
+from typing import Any
 
 manager = Manager()
 shared_memory: dict[str, Any] = manager.dict()  # type: ignore
@@ -25,12 +26,11 @@ class Db:
     def close(self) -> None:
         self.clear()
 
-    def get(self, key: str) -> Optional[Any]:
+    def get(self, key: str) -> Any | None:
         return self.cache.get(key, None)
 
     def all(self) -> Iterable[Any]:
-        for key, value in self.cache.items():
-            yield key, value
+        yield from self.cache.items()
 
     def set(self, key: str, value: Any) -> Any:
         lock.acquire()
@@ -38,7 +38,7 @@ class Db:
         lock.release()
         return value
 
-    def delete(self, key: str) -> Optional[Any]:
+    def delete(self, key: str) -> Any | None:
         return self.cache.pop(key, None)
 
     def clear(self) -> None:

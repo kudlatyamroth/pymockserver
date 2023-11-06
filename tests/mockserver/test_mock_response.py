@@ -114,7 +114,7 @@ def test_should_response_infinite_times(client, create_mock):
         }
     )
 
-    for x in range(5):
+    for _ in range(5):
         mock_response = client.get(path)
         assert mock_response.status_code == 200
 
