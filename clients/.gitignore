@@ -1,9 +1,0 @@
-# NPM files
-node_modules/
-npm-debug.log*
-
-# Dist
-/*/dist
-
-# Typings
-typings/

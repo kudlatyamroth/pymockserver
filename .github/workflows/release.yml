@@ -32,7 +32,7 @@ jobs:
           git pull origin master --tags --force
       - name: Generate openapi
         run: |
-          poetry run python -m invoke generate-openapi
+          poetry run python openapi.py
           mkdir -p dist
           mv openapi.json dist/openapi.json
       - name: Generate helm packages
