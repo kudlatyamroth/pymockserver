@@ -8,7 +8,7 @@ from pymockserver.domain.fixture import load_fixtures
 from pymockserver.routers import meta, mockserver
 from pymockserver.tools.utils import use_route_names_as_operation_ids
 
-__version__ = "2.1.0"
+__version__ = "2.1.1"
 
 
 @asynccontextmanager

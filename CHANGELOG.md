@@ -4,6 +4,12 @@
 
 
 
+## 2.1.1 (2023-11-07)
+
+### Fix
+
+- change way of generating helm package after github action change
+
 ## 2.1.0 (2023-11-07)
 
 ### Feat
