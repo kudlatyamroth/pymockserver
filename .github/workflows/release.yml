@@ -35,14 +35,15 @@ jobs:
           poetry run python openapi.py
           mkdir -p dist
           mv openapi.json dist/openapi.json
-      - name: Generate helm packages
+      - name: Get helm dependency
         uses: alexellis/arkade-get@master
         with:
           helm: latest
-          command: |
-            mkdir -p dist
-            helm package helm_v3/pymockserver/
-            mv pymockserver-`git tag | tail -n 1`.tgz dist/helm_v3-pymockserver.tgz
+      - name: Generate helm package
+        run: |
+          mkdir -p dist
+          helm package helm_v3/pymockserver/
+          mv pymockserver-`git tag | tail -n 1`.tgz dist/helm_v3-pymockserver.tgz
       - name: Publish GitHub Release
         uses: fnkr/github-action-ghr@v1.3
         env:
