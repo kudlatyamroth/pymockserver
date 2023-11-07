@@ -37,7 +37,6 @@ version_files = [
     "pymockserver/main.py:__version__",
     "helm_v3/pymockserver/Chart.yaml:version",
     "helm_v3/pymockserver/Chart.yaml:appVersion",
-    "clients/typescript-node/package.json:version",
 ]
 
 [tool.ruff]
