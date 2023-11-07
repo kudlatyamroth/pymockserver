@@ -4,6 +4,21 @@
 
 
 
+## 2.1.0 (2023-11-07)
+
+### Feat
+
+- better readme
+- add ruff dependency
+- remove useless now gitpython and invoke
+- remove useless scripts
+- remove pre-commit dependency
+- update dependencies and docker image
+
+### Fix
+
+- remove typescript client from version bump
+
 ## 2.0.2 (2021-08-05)
 
 ### Fix
