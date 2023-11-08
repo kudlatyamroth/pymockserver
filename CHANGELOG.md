@@ -4,6 +4,12 @@
 
 
 
+## 2.1.2 (2023-11-08)
+
+### Fix
+
+- connect lifespan events to fastapi
+
 ## 2.1.1 (2023-11-07)
 
 ### Fix
