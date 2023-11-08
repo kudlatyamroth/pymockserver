@@ -25,6 +25,7 @@ app = FastAPI(
     title="MockServer API",
     description="Simple and fast mock server implemented in python",
     version=__version__,
+    lifespan=lifespan,
 )
 
 app.include_router(meta.router)

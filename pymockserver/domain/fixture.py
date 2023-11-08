@@ -13,7 +13,12 @@ FIXTURES_DIR = Path("/etc/fixtures")
 
 
 def load_fixtures() -> None:
-    if not FIXTURES_DIR.is_dir() or not any(FIXTURES_DIR.iterdir()):
+    if not FIXTURES_DIR.is_dir():
+        logger.info("No fixture directory found")
+        return
+
+    if not any(FIXTURES_DIR.iterdir()):
+        logger.info("No fixture files found")
         return
 
     for fixture_file in FIXTURES_DIR.iterdir():
@@ -23,8 +28,10 @@ def load_fixtures() -> None:
 
 
 def check_file_extension(fixture_file: Path) -> bool:
+    if fixture_file.name.startswith(".."):
+        return False
     if fixture_file.suffix not in [".json", ".yaml"]:
-        logger.warning("Wrong fixture file extension. Only json and yaml are handled.")
+        logger.warning(f"Wrong fixture file extension ({fixture_file.name}). Only json and yaml are handled.")
         return False
     return True
 
