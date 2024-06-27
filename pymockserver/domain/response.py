@@ -27,27 +27,25 @@ def is_partially_match_list(body: Any, mock: list[Any]) -> bool:
 
 
 def is_partially_match(body: Any, mock: Any) -> bool:
-    if type(mock) is not type(body):
-        return False
-    if mock is None and body is not None:
-        return False
-    if isinstance(mock, dict) and not is_partially_match_dict(body, mock):
-        return False
-    if isinstance(mock, list) and not is_partially_match_list(body, mock):
-        return False
-    if isinstance(mock, str | int | float | bool | bytes) and mock != body:
-        return False
-    return True
+    return not any(
+        [
+            (type(mock) is not type(body)),
+            (mock is None and body is not None),
+            (isinstance(mock, dict) and not is_partially_match_dict(body, mock)),
+            (isinstance(mock, list) and not is_partially_match_list(body, mock)),
+            (isinstance(mock, str | int | float | bool | bytes) and mock != body),
+        ]
+    )
 
 
 def is_body_match(request: Any, mock: MockData) -> bool:
-    if mock.request.match_body_mode is None:
-        return True
-    if mock.request.match_body_mode == MatchEnum.exact and request == mock.request.body:
-        return True
-    if mock.request.match_body_mode == MatchEnum.partially and is_partially_match(request, mock.request.body):
-        return True
-    return False
+    return any(
+        [
+            (mock.request.match_body_mode is None),
+            (mock.request.match_body_mode == MatchEnum.exact and request == mock.request.body),
+            (mock.request.match_body_mode == MatchEnum.partially and is_partially_match(request, mock.request.body)),
+        ]
+    )
 
 
 def is_headers_match(request: Any, mock: MockData) -> bool:
