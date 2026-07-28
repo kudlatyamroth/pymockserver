@@ -332,12 +332,12 @@ The app will be available on `http://localhost:8000`, with interactive docs on
 
 # Development
 
-This project uses `ruff` for linting/formatting, `mypy` for type checking, and
-`pytest` for tests. Common tasks are wired up in the `Makefile`:
+This project uses `ruff` for linting/formatting, [`ty`](https://docs.astral.sh/ty/)
+for type checking, and `pytest` for tests. Common tasks are wired up in the `Makefile`:
 
 ```shell
-make lint         # ruff check + ruff format --check + mypy
-make lint-fix      # ruff check --fix + ruff format + mypy
+make lint         # ruff check + ruff format --check + ty check
+make lint-fix      # ruff check --fix + ruff format + ty check
 make test          # pytest -vv tests
 ```
 

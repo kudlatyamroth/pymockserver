@@ -2,7 +2,7 @@ from typing import Any, cast
 
 from pymockserver.domain.request import request_hash
 from pymockserver.models import manager
-from pymockserver.models.type import HttpRequest, HttpResponse, MatchEnum, MockData, MockedData
+from pymockserver.models.type import BodyType, HeadersType, HttpRequest, HttpResponse, MatchEnum, MockData, MockedData
 from pymockserver.tools.logger import logger
 
 
@@ -38,7 +38,7 @@ def is_partially_match(body: Any, mock: Any) -> bool:
     )
 
 
-def is_body_match(request: Any, mock: MockData) -> bool:
+def is_body_match(request: BodyType, mock: MockData) -> bool:
     return any(
         [
             (mock.request.match_body_mode is None),
@@ -48,7 +48,7 @@ def is_body_match(request: Any, mock: MockData) -> bool:
     )
 
 
-def is_headers_match(request: Any, mock: MockData) -> bool:
+def is_headers_match(request: HeadersType | None, mock: MockData) -> bool:
     if mock.request.headers is None:
         return True
     if len(mock.request.headers) == 0:

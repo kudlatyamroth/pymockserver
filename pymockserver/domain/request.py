@@ -6,7 +6,7 @@ from starlette.requests import Request
 from pymockserver.models.type import HttpRequest, QueryStrings
 
 
-async def request_to_model(url_path: str | None, request: Request) -> HttpRequest:
+async def request_to_model(url_path: str, request: Request) -> HttpRequest:
     request_body = await decode_request(request)
     query_params = query_params_to_http_qs(request.query_params.multi_items())
 
