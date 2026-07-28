@@ -1,6 +1,6 @@
 FROM ghcr.io/astral-sh/uv:0.11.25 AS uv
 
-FROM python:3.12-alpine
+FROM python:3.14-alpine
 
 LABEL maintainer="Karol Fuksiewicz <kfuks2@gmail.com>"
 

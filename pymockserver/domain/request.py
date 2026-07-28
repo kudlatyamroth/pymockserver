@@ -22,7 +22,7 @@ async def request_to_model(url_path: str | None, request: Request) -> HttpReques
 async def decode_request(request: Request) -> Any:
     try:
         return await request.json()
-    except (json.JSONDecodeError, TypeError):
+    except json.JSONDecodeError, TypeError:
         return (await request.body()).decode("utf-8")
 
 

@@ -320,7 +320,7 @@ environment variable).
 
 # Running locally
 
-Requirements: Python `>=3.12,<3.13` and [uv](https://docs.astral.sh/uv/).
+Requirements: Python `>=3.14` and [uv](https://docs.astral.sh/uv/).
 
 ```shell
 uv sync
@@ -346,7 +346,7 @@ and versioning/changelog is managed by [Commitizen](https://commitizen-tools.git
 
 # Docker & Helm
 
-A production-ready Docker image (Python 3.12 alpine, gunicorn + uvicorn workers) is
+A production-ready Docker image (Python 3.14 alpine, gunicorn + uvicorn workers) is
 provided via the `Dockerfile`. A Helm v3 chart is available under `helm_v3/pymockserver`,
 including readiness/liveness probes pointed at `/_meta/health` and support for mounting
 [fixture files](#fixtures) via the `fixtureFiles` value.

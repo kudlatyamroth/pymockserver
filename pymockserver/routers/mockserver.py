@@ -77,5 +77,5 @@ async def mock_response(*, url_path: str | None = None, request: Request, respon
         if not isinstance(mocked_response.body, str | bytes | bytearray):
             raise TypeError("Body is not json string")
         return json.loads(mocked_response.body)
-    except (json.JSONDecodeError, TypeError):
+    except json.JSONDecodeError, TypeError:
         return mocked_response.body
