@@ -1,38 +1,42 @@
 [project]
-requires-python = ">=3.12"
-
-[tool.poetry]
 name = "pymockserver"
 version = "2.2.0"
 description = "Simple MockServer implemented in python"
-authors = ["Kudlaty <kfuks2@gmail.com>"]
+authors = [{ name = "Kudlaty", email = "kfuks2@gmail.com" }]
 license = "GPL-3.0"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "fastapi>=0.111.0,<0.112.0",
+    "uvicorn>=0.30.1,<0.31.0",
+    "pyyaml>=6.0.1,<7.0.0",
+    "gunicorn>=22.0.0,<23.0.0",
+    "uvloop>=0.19.0,<0.20.0",
+    "httptools>=0.6.1,<0.7.0",
+]
 
-[tool.poetry.dependencies]
-python = "^3.12"
-fastapi = "^0.111.0"
-uvicorn = "^0.30.1"
-pyyaml = "^6.0.1"
-gunicorn = "^22.0.0"
-uvloop = "^0.19.0"
-httptools = "^0.6.1"
+[dependency-groups]
+dev = [
+    "httpx>=0.27.0,<0.28.0",
+    "mypy>=1.10.1,<2.0.0",
+    "pytest>=8.2.2,<9.0.0",
+    "mergedeep>=1.3.4,<2.0.0",
+    "commitizen>=4.4.0,<5.0.0",
+    "types-PyYAML>=6.0.12,<7.0.0",
+    "ruff>=0.5.0,<0.6.0",
+]
 
-[tool.poetry.group.dev.dependencies]
-httpx = "^0.27.0"
-mypy = "^1.10.1"
-pytest = "^8.2.2"
-mergedeep = "^1.3.4"
-commitizen = "^3.27.0"
-types-PyYAML = "^6.0.12"
-ruff = "^0.5.0"
+[tool.uv]
+# This project is only ever shipped as a Docker image, never published as an
+# installable package, so there's no need for a build backend to build/install
+# it - just install its dependencies.
+package = false
 
 [tool.commitizen]
-version_provider = "poetry"
+version_provider = "uv"
 name = "cz_conventional_commits"
 version = "2.2.0"
 annotated_tag = true
 version_files = [
-    "pyproject.toml:version",
     "pymockserver/main.py:__version__",
     "helm_v3/pymockserver/Chart.yaml:version",
     "helm_v3/pymockserver/Chart.yaml:appVersion",
@@ -72,7 +76,3 @@ warn_redundant_casts = true
 warn_unused_ignores = true
 warn_unused_configs = true
 plugins = ["pydantic.mypy"]
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"

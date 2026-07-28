@@ -320,11 +320,11 @@ environment variable).
 
 # Running locally
 
-Requirements: Python `>=3.12` and [Poetry](https://python-poetry.org/).
+Requirements: Python `>=3.12,<3.13` and [uv](https://docs.astral.sh/uv/).
 
 ```shell
-poetry install
-poetry run uvicorn pymockserver.main:app --reload --port 8000
+uv sync
+uv run uvicorn pymockserver.main:app --reload --port 8000
 ```
 
 The app will be available on `http://localhost:8000`, with interactive docs on
