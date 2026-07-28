@@ -1,5 +1,5 @@
 import json
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -9,7 +9,7 @@ HeadersType = dict[str, str]
 BodyType = bool | str | int | dict[Any, Any] | list[Any] | None
 
 
-class MatchEnum(str, Enum):
+class MatchEnum(StrEnum):
     exact = "exact"
     partially = "partially"
 
