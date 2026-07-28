@@ -13,11 +13,63 @@ Main differences to other solutions like `https://www.mock-server.com/`:
 - easier to delete mock
 - faster create and get mock for request
 
-# Usage
+# Table of contents
 
-### Create mock
+- [How it works](#how-it-works)
+- [API reference](#api-reference)
+  - [`GET /_meta/health`](#get-_metahealth)
+  - [`POST /mockserver`](#post-mockserver)
+  - [`GET /mockserver`](#get-mockserver)
+  - [`DELETE /mockserver`](#delete-mockserver)
+  - [`DELETE /mockserver/reset`](#delete-mockserverreset)
+  - [Any other path (mocked route)](#any-other-path-mocked-route)
+- [Request/response matching rules](#requestresponse-matching-rules)
+- [Request options](#request-options)
+- [Response options](#response-options)
+- [Fixtures](#fixtures)
+- [Architecture](#architecture)
+- [Configuration (environment variables)](#configuration-environment-variables)
+- [Running locally](#running-locally)
+- [Development](#development)
+- [Docker & Helm](#docker--helm)
 
-To create mock, just send post request to PyMockserver:
+# How it works
+
+PyMockserver exposes a control API (`/mockserver`) that you use to register fake
+("mocked") responses for arbitrary HTTP requests. Every other path/method that is
+not one of the control endpoints is treated as a candidate for mock matching: the
+server looks up a mock registered for that exact `method + path + queryStringParameters`
+combination and, if found, additionally checks `headers`/`body` matching rules before
+returning the configured response.
+
+Registered mocks are kept in memory only (a `multiprocessing.Manager` shared dict, see
+[Architecture](#architecture)) - restarting the process clears everything, unless
+[fixtures](#fixtures) are used to preload them again on startup.
+
+# API reference
+
+The interactive OpenAPI/Swagger documentation is always available on a running
+instance at `/docs` (and the raw schema at `/openapi.json`, also committed in this
+repo as [`openapi.json`](./openapi.json)).
+
+## `GET /_meta/health`
+
+Health check endpoint, meant to be used as a readiness/liveness probe (see
+`helm_v3/pymockserver/values.yaml`).
+
+```shell
+curl --request GET "http://pymockserver/_meta/health"
+```
+
+Response `200 OK`:
+```json
+{ "status": "ok" }
+```
+
+## `POST /mockserver`
+
+Registers a new mock. Body has to match the `CreatePayload` schema: `httpRequest` +
+`httpResponse` (see [Request options](#request-options) / [Response options](#response-options)).
 
 ```shell
 curl --request POST "http://pymockserver/mockserver" --data '{
@@ -36,20 +88,53 @@ curl --request POST "http://pymockserver/mockserver" --data '{
     }'
 ```
 
-And now to request for this mock like that:
+And now request this mock like that:
 ```shell
 curl --request GET "http://pymockserver/test"
 ```
-and this will return status code 200 and body:
+which returns status code 200 and body:
 ```json
 {
     "status": "ok"
 }
 ```
 
-### Delete mock
+If a mock with the exact same `method + path + queryStringParameters` already exists,
+the new one is **appended to a FIFO queue** instead of replacing it - see
+[Request/response matching rules](#requestresponse-matching-rules).
 
-Same as create mock, but request method DELETE. So to delete previous mock send request:
+Response `201 Created`:
+```json
+{ "status": "ok" }
+```
+
+## `GET /mockserver`
+
+Returns every currently registered mock, grouped by their internal hash key
+(`method:path?queryString`).
+
+```shell
+curl --request GET "http://pymockserver/mockserver"
+```
+
+Response `200 OK`, e.g.:
+```json
+{
+    "GET:/test?": [
+        {
+            "request": { "method": "GET", "path": "/test", "...": "..." },
+            "response": { "status_code": 200, "...": "..." }
+        }
+    ]
+}
+```
+
+## `DELETE /mockserver`
+
+Deletes **all** mocks registered for a given `httpRequest` (method + path +
+queryStringParameters). It removes the whole queue for that request signature at once,
+not a single queued response.
+
 ```shell
 curl --request DELETE "http://pymockserver/mockserver" --data '{
         "method": "GET",
@@ -57,25 +142,93 @@ curl --request DELETE "http://pymockserver/mockserver" --data '{
     }'
 ```
 
-### Delete all mock
+Response `200 OK`:
+```json
+{ "removed": [ /* the deleted mocks, or null if nothing matched */ ], "mocked": { /* remaining mocks, same shape as GET /mockserver */ } }
+```
 
-To delete all mocks, just send delete request to `/mockserver/reset`:
+## `DELETE /mockserver/reset`
+
+Deletes every registered mock at once.
+
 ```shell
 curl --request DELETE "http://pymockserver/mockserver/reset"
 ```
 
-
-### Get all mock
-
-To get all mocks, just send get request to `/mockserver`:
-```shell
-curl --request GET "http://pymockserver/mockserver"
+Response `200 OK`:
+```json
+{ "status": "ok" }
 ```
 
-### Fixtures
+## Any other path (mocked route)
 
-PyMockserver has ability to load fixtures.
-To provide fixtures for PyMockserver, just set fixtureFiles in helm values file, ex:
+Every request that doesn't hit one of the endpoints above (any method, any path) is
+matched against the registered mocks and, if a match is found, the configured mocked
+response is returned. If nothing matches, the server responds with `404 Not Found`
+and `{"detail": "Not found matching response"}`.
+
+# Request/response matching rules
+
+1. **Lookup key**: incoming requests are looked up by an exact-match key built from
+   `method`, `path` and `queryStringParameters` (see `request_hash` in
+   `pymockserver/domain/request.py`). Query string values are compared as sets, order
+   of values/keys doesn't matter, but every key/value pair has to be present.
+2. **Queue of candidates**: several mocks can be registered for the very same
+   `method + path + queryStringParameters`. They are checked **in the order they were
+   created** and the first one whose `body`/`headers` match wins.
+3. **Body matching** (`match_body_mode` on `httpRequest`):
+   - not set (`None`, default) → body is ignored, any request body matches.
+   - `exact` → the request body must be equal to the mocked `body`.
+   - `partially` → the mocked `body` only needs to be a subset of the request body
+     (recursively, for dicts/lists/scalars).
+4. **Headers matching**: if `headers` is set on the mock, the request headers must
+   contain those headers (partial/subset match, same algorithm as `partially` body
+   matching). If not set (or empty), headers are ignored.
+5. **`remainingTimes` bookkeeping**: every time a mock is matched, its
+   `remainingTimes` counter is decreased (unless it's `-1`, meaning unlimited).
+   When it reaches `0`:
+   - if it was the only mock registered for that request signature, the whole entry
+     is deleted;
+   - if there are other queued mocks for the same signature, only the exhausted one
+     is removed and the rest remain (and will be tried in order on the next request).
+6. **`delay`**: if greater than `0`, the response is delayed by that many
+   milliseconds (`asyncio.sleep`) before being returned.
+
+# Request options
+
+`httpRequest`:
+
+| key    | example value | default | required | description                                                          |
+|--------|---------------|---------|----------|----------------------------------------------------------------------|
+| method | `"POST"`        | GET | - | Specify valid http request method, with which mock will be returned |
+| path   | `"/test"`       | - | yes | Path at which mock can be requested |
+| queryStringParameters | `{ "age": ["20"] }` | - | - | Parameters (map of string to list of strings) that need to be provided in the request to get this mock |
+| headers | `{"x-user": "John"}` | - | - | Headers that needs to be provided in request to get this mock |
+| body | `{"status": "ok"}` | - | - | Whole body or part of the body that needs to match to get this mock |
+| match_body_mode | `"exact"` | `null` | - | Specify how to match body. `exact` - needs a perfect match, `partially` - needs only part of body to match, unset - body is ignored |
+
+# Response options
+
+`httpResponse`:
+
+| key        | example value | default | required | description                                                          |
+|------------|---------------|---------|----------|----------------------------------------------------------------------|
+| statusCode | `400` | `200` | - | Http status code that response will return (`100`-`599`) |
+| headers    | `{"x-user": "John"}` | - | - | Headers that response will have |
+| body | `{"status": "ok"}` | `null` | - | Body that response will have |
+| remainingTimes | `5` | `-1` | - | Defines how many times this mock can be matched and returned before it's automatically deleted. `-1` means this mock can be matched infinite times, and the only way to get rid of it is to manually delete it or clear all mocks |
+| delay | `10` | `0` | - | If greater than 0, delays the response by that many milliseconds |
+
+# Fixtures
+
+PyMockserver can preload mocks on startup from files placed in `/etc/fixtures`
+inside the container (see `FIXTURES_DIR` in `pymockserver/domain/fixture.py`). Both
+`.yaml` and `.json` files are supported (any other extension is ignored), each file
+containing a list of `httpRequest`/`httpResponse` objects (same schema as
+`POST /mockserver`).
+
+When deploying with the provided Helm chart, fixture files can be supplied through
+the `fixtureFiles` value, which are mounted as files under `/etc/fixtures`, e.g.:
 ```yaml
 fixtureFiles:
   fixtures.yaml: |
@@ -89,26 +242,111 @@ fixtureFiles:
           status: "ok"
 ```
 
-## Request options
+# Architecture
 
-httpRequest:
+The project is a small [FastAPI](https://fastapi.tiangolo.com/) application, structured
+in a light "hexagonal-ish" layout:
 
-| key    | example value | default | required | description                                                          |
-|--------|---------------|---------|----------|----------------------------------------------------------------------|
-| method | `"POST"`        | GET | - | Specify valid http request method, with which mock will be returned |
-| path   | `"/test"`       | - | yes | Path at which mock can be requested |
-| queryStringParameters | `{ "age": [20] }` | - | - | Parameters that needs to be provided in request to get this mock |
-| headers | `{"x-user": "John"}` | - | - | Headers that needs to be provided in request to get this mock |
-| body | `{"status": "ok"}` | - | - | Whole body or part of the body that needs to match to get this mock |
-| match_body_mode | `"exact"` | - | - | Specify how to match body. `exact` - will need perfect match, `partially` - needs only part of body to match |
+```
+pymockserver/
+├── main.py                # FastAPI app, lifespan (connects db + loads fixtures)
+├── routers/
+│   ├── meta.py             # /_meta/health
+│   └── mockserver.py       # /mockserver CRUD + catch-all mock responder
+├── domain/
+│   ├── request.py          # incoming request -> HttpRequest model, hashing/serialization of the lookup key
+│   ├── response.py         # matching logic (body/headers) + remainingTimes bookkeeping
+│   └── fixture.py          # loading fixtures from /etc/fixtures on startup
+├── models/
+│   ├── type.py             # pydantic models: HttpRequest, HttpResponse, CreatePayload, MockData...
+│   └── manager.py          # CRUD operations on top of the storage adapter
+├── adapters/
+│   └── shared_memory.py    # storage backend: a multiprocessing.Manager dict + lock, shared across gunicorn workers
+└── tools/
+    ├── logger.py           # app logger configuration
+    └── utils.py            # misc FastAPI helpers (operation IDs)
+```
 
+Key design point: since the app can run with several gunicorn/uvicorn worker
+processes, mocks are stored in a `multiprocessing.Manager().dict()` (see
+`pymockserver/adapters/shared_memory.py`) so that a mock created on one worker is
+visible to requests handled by another worker.
 
-httpResponse:
+> [!IMPORTANT]
+> That shared dict only actually ends up **shared** across workers because the
+> Docker image runs gunicorn with `--preload` (see `GUNICORN_CMD_ARGS` in the
+> `Dockerfile`). `--preload` makes gunicorn import the application - and therefore
+> create the `multiprocessing.Manager()` / shared dict / lock in
+> `pymockserver/adapters/shared_memory.py` - **once in the master process before
+> forking** the worker processes. The forked workers then inherit a handle to that
+> same manager, so `POST /mockserver` on one worker is visible to a request handled
+> by another worker.
+>
+> If the app were started without `--preload` (e.g. `uvicorn.run(..., reload=True)`
+> as in `pymockserver/main.py`'s `__main__` block, or multiple plain uvicorn/gunicorn
+> workers without preloading), each worker process would import
+> `shared_memory.py` independently and spin up its *own* `Manager()`, so mocks
+> created via one worker would not be visible to requests routed to another worker.
+> This only matters when running with more than one worker process; for local
+> single-process development (see [Running locally](#running-locally)) it's a
+> non-issue.
 
-| key        | example value | default | required | description                                                          |
-|------------|---------------|---------|----------|----------------------------------------------------------------------|
-| statusCode | `400` | `200` | - | Http status code that response will return |
-| headers    | `{"x-user": "John"}` | - | - | Headers that response will have |
-| body | `{"status": "ok"}` | - | - | Body that response will have |
-| remainingTimes | `5` | `-1` | - | Defines how many times this mock can be matched and returned before auto delete mock. If `-1` it means that this mock can be matched and returned infinite times, and only way to get rid of this mock is to manually delete it or clear all mocks |
-| delay | `10` | `0` | - | If greater then 0, it will delay response for that time. Value is expressed in milliseconds |
+# Configuration (environment variables)
+
+These are mostly consumed by `gunicorn_conf.py` / `start.sh` (used when running via
+the Docker image):
+
+| variable | default | description |
+|----------|---------|--------------|
+| `MODULE_NAME` | `pymockserver.main` | Python module containing the FastAPI `app` |
+| `VARIABLE_NAME` | `app` | Name of the FastAPI app object |
+| `WORKER_CLASS` | `uvicorn.workers.UvicornWorker` | Gunicorn worker class |
+| `HOST` | `0.0.0.0` | Bind host |
+| `PORT` | `80` | Bind port |
+| `BIND` | - | Overrides `HOST:PORT` if set |
+| `WORKERS_PER_CORE` | `1` | Used to compute default worker count |
+| `MAX_WORKERS` | - | Upper bound for computed worker count |
+| `WEB_CONCURRENCY` | computed from cores | Number of gunicorn workers |
+| `LOG_LEVEL` | `info` | Gunicorn log level |
+| `ACCESS_LOG` | `-` (stdout) | Access log destination, empty string disables it |
+| `ERROR_LOG` | `-` (stdout) | Error log destination |
+| `GRACEFUL_TIMEOUT` | `120` | Graceful worker shutdown timeout (seconds) |
+| `TIMEOUT` | `120` | Worker timeout (seconds) |
+| `KEEP_ALIVE` | `5` | Keep-alive timeout (seconds) |
+| `GUNICORN_CMD_ARGS` | `--preload --max-requests=300 --max-requests-jitter=300` | Extra gunicorn CLI args, read natively by gunicorn. **`--preload` must stay set** whenever running with more than one worker - see the note in [Architecture](#architecture) about the shared in-memory mock store |
+
+Fixtures are read from a fixed path, `/etc/fixtures` (not configurable via
+environment variable).
+
+# Running locally
+
+Requirements: Python `>=3.12` and [Poetry](https://python-poetry.org/).
+
+```shell
+poetry install
+poetry run uvicorn pymockserver.main:app --reload --port 8000
+```
+
+The app will be available on `http://localhost:8000`, with interactive docs on
+`http://localhost:8000/docs`.
+
+# Development
+
+This project uses `ruff` for linting/formatting, `mypy` for type checking, and
+`pytest` for tests. Common tasks are wired up in the `Makefile`:
+
+```shell
+make lint         # ruff check + ruff format --check + mypy
+make lint-fix      # ruff check --fix + ruff format + mypy
+make test          # pytest -vv tests
+```
+
+Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/)
+and versioning/changelog is managed by [Commitizen](https://commitizen-tools.github.io/commitizen/).
+
+# Docker & Helm
+
+A production-ready Docker image (Python 3.12 alpine, gunicorn + uvicorn workers) is
+provided via the `Dockerfile`. A Helm v3 chart is available under `helm_v3/pymockserver`,
+including readiness/liveness probes pointed at `/_meta/health` and support for mounting
+[fixture files](#fixtures) via the `fixtureFiles` value.

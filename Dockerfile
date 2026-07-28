@@ -38,6 +38,11 @@ ENV WEB_CONCURRENCY 4
 ENV KEEP_ALIVE 300
 ENV TIMEOUT 300
 ENV ACCESS_LOG ''
+# `--preload` is required: it makes gunicorn import the app (and create the
+# multiprocessing.Manager backing the in-memory mock store, see
+# pymockserver/adapters/shared_memory.py) once in the master process *before*
+# forking workers, so every worker shares the very same mock storage. Without
+# it each worker would get its own, independent store.
 ENV GUNICORN_CMD_ARGS '--preload --max-requests=300 --max-requests-jitter=300'
 ENV MODULE_NAME 'pymockserver.main'
 ENV PRELOAD 1
