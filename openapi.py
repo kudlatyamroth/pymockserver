@@ -6,7 +6,7 @@ from pathlib import Path
 project_dir = Path(__file__).parent
 
 
-def generate_openapi():
+def generate_openapi() -> None:
     from main import app
 
     with open(str(project_dir.joinpath("openapi.json")), "w") as openapi_file:

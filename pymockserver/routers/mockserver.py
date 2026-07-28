@@ -58,7 +58,7 @@ async def clear_all_mocks() -> dict[str, str]:
 @router.get("{url_path:path}", include_in_schema=False)
 @router.put("{url_path:path}", include_in_schema=False)
 @router.delete("{url_path:path}", include_in_schema=False)
-async def mock_response(*, url_path: str | None = None, request: Request, response: Response) -> Any:
+async def mock_response(*, url_path: str, request: Request, response: Response) -> Any:
     http_request = await request_to_model(url_path, request)
     mocked_response = await get_mocked_response(http_request)
 
