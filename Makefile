@@ -1,19 +1,19 @@
 .PHONY: lint lint-fix test
 
 lint:
-	poetry run ruff check .
-	poetry run ruff format --check .
-	poetry run mypy
+	uv run ruff check .
+	uv run ruff format --check .
+	uv run mypy
 
 lint-fix:
-	poetry run ruff check --fix --exit-zero .
-	poetry run ruff format .
-	poetry run mypy
+	uv run ruff check --fix --exit-zero .
+	uv run ruff format .
+	uv run mypy
 
 lint-unsafe-fix:
-	poetry run ruff check --fix --unsafe-fixes --exit-zero .
-	poetry run ruff format .
-	poetry run mypy
+	uv run ruff check --fix --unsafe-fixes --exit-zero .
+	uv run ruff format .
+	uv run mypy
 
 test:
-	poetry run pytest -vv tests
+	uv run pytest -vv tests
