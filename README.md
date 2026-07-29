@@ -42,7 +42,7 @@ server looks up a mock registered for that exact `method + path + queryStringPar
 combination and, if found, additionally checks `headers`/`body` matching rules before
 returning the configured response.
 
-Registered mocks are kept in memory only (a `multiprocessing.Manager` shared dict, see
+Registered mocks are kept in memory only (a plain dict, see
 [Architecture](#architecture)) - restarting the process clears everything, unless
 [fixtures](#fixtures) are used to preload them again on startup.
 
@@ -261,59 +261,47 @@ pymockserver/
 │   ├── type.py             # pydantic models: HttpRequest, HttpResponse, CreatePayload, MockData...
 │   └── manager.py          # CRUD operations on top of the storage adapter
 ├── adapters/
-│   └── shared_memory.py    # storage backend: a multiprocessing.Manager dict + lock, shared across gunicorn workers
+│   └── shared_memory.py    # storage backend: a plain in-memory dict, single-process only (see below)
 └── tools/
     ├── logger.py           # app logger configuration
     └── utils.py            # misc FastAPI helpers (operation IDs)
 ```
 
-Key design point: since the app can run with several gunicorn/uvicorn worker
-processes, mocks are stored in a `multiprocessing.Manager().dict()` (see
-`pymockserver/adapters/shared_memory.py`) so that a mock created on one worker is
-visible to requests handled by another worker.
+Key design point: the app runs as a **single uvicorn process** (no gunicorn, no
+`--workers`), so mocks can simply be stored in a plain `dict` (see
+`pymockserver/adapters/shared_memory.py`) - there is only ever one process, so
+there's nothing to keep in sync across workers.
 
 > [!IMPORTANT]
-> That shared dict only actually ends up **shared** across workers because the
-> Docker image runs gunicorn with `--preload` (see `GUNICORN_CMD_ARGS` in the
-> `Dockerfile`). `--preload` makes gunicorn import the application - and therefore
-> create the `multiprocessing.Manager()` / shared dict / lock in
-> `pymockserver/adapters/shared_memory.py` - **once in the master process before
-> forking** the worker processes. The forked workers then inherit a handle to that
-> same manager, so `POST /mockserver` on one worker is visible to a request handled
-> by another worker.
+> The plain dict is safe without any locking *only* because of this
+> single-process, single-event-loop design: every route handler that touches the
+> store is `async def` (never a plain `def`, which Starlette would run in a
+> thread pool), and asyncio is cooperative on a single thread - a coroutine only
+> yields control at an `await`. The hot path that reads/matches/decrements/deletes
+> mocks (`pymockserver/domain/response.py::retrieve_matching_response`) contains
+> no `await` points, so it always runs atomically with respect to every other
+> in-flight request, no matter how many requests are concurrent from the client's
+> point of view.
 >
-> If the app were started without `--preload` (e.g. `uvicorn.run(..., reload=True)`
-> as in `pymockserver/main.py`'s `__main__` block, or multiple plain uvicorn/gunicorn
-> workers without preloading), each worker process would import
-> `shared_memory.py` independently and spin up its *own* `Manager()`, so mocks
-> created via one worker would not be visible to requests routed to another worker.
-> This only matters when running with more than one worker process; for local
-> single-process development (see [Running locally](#running-locally)) it's a
-> non-issue.
+> If a plain `def` handler that touches the store were ever added, or the app
+> were changed to run real OS threads or multiple worker processes, this
+> guarantee would break and explicit locking (or a shared/external store) would
+> be needed again. Horizontal scaling is handled via Kubernetes `replicaCount`
+> (see `helm_v3/pymockserver/values.yaml`) instead of multiple processes/threads
+> within one container - mocks are not shared across pods, only within one.
 
 # Configuration (environment variables)
 
-These are mostly consumed by `gunicorn_conf.py` / `start.sh` (used when running via
-the Docker image):
+These are consumed by `start.sh` (used when running via the Docker image), which
+starts a single `uvicorn` process directly:
 
 | variable | default | description |
 |----------|---------|--------------|
 | `MODULE_NAME` | `pymockserver.main` | Python module containing the FastAPI `app` |
 | `VARIABLE_NAME` | `app` | Name of the FastAPI app object |
-| `WORKER_CLASS` | `uvicorn.workers.UvicornWorker` | Gunicorn worker class |
 | `HOST` | `0.0.0.0` | Bind host |
 | `PORT` | `80` | Bind port |
-| `BIND` | - | Overrides `HOST:PORT` if set |
-| `WORKERS_PER_CORE` | `1` | Used to compute default worker count |
-| `MAX_WORKERS` | - | Upper bound for computed worker count |
-| `WEB_CONCURRENCY` | computed from cores | Number of gunicorn workers |
-| `LOG_LEVEL` | `info` | Gunicorn log level |
-| `ACCESS_LOG` | `-` (stdout) | Access log destination, empty string disables it |
-| `ERROR_LOG` | `-` (stdout) | Error log destination |
-| `GRACEFUL_TIMEOUT` | `120` | Graceful worker shutdown timeout (seconds) |
-| `TIMEOUT` | `120` | Worker timeout (seconds) |
-| `KEEP_ALIVE` | `5` | Keep-alive timeout (seconds) |
-| `GUNICORN_CMD_ARGS` | `--preload --max-requests=300 --max-requests-jitter=300` | Extra gunicorn CLI args, read natively by gunicorn. **`--preload` must stay set** whenever running with more than one worker - see the note in [Architecture](#architecture) about the shared in-memory mock store |
+| `LOG_LEVEL` | `info` | Uvicorn log level |
 
 Fixtures are read from a fixed path, `/etc/fixtures` (not configurable via
 environment variable).
@@ -346,7 +334,7 @@ and versioning/changelog is managed by [Commitizen](https://commitizen-tools.git
 
 # Docker & Helm
 
-A production-ready Docker image (Python 3.14 alpine, gunicorn + uvicorn workers) is
+A production-ready Docker image (Python 3.14 alpine, single uvicorn process) is
 provided via the `Dockerfile`. A Helm v3 chart is available under `helm_v3/pymockserver`,
 including readiness/liveness probes pointed at `/_meta/health` and support for mounting
 [fixture files](#fixtures) via the `fixtureFiles` value.
