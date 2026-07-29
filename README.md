@@ -55,7 +55,7 @@ repo as [`openapi.json`](./openapi.json)).
 ## `GET /_meta/health`
 
 Health check endpoint, meant to be used as a readiness/liveness probe (see
-`helm_v3/pymockserver/values.yaml`).
+`helm/pymockserver/values.yaml`).
 
 ```shell
 curl --request GET "http://pymockserver/_meta/health"
@@ -287,7 +287,7 @@ there's nothing to keep in sync across workers.
 > were changed to run real OS threads or multiple worker processes, this
 > guarantee would break and explicit locking (or a shared/external store) would
 > be needed again. Horizontal scaling is handled via Kubernetes `replicaCount`
-> (see `helm_v3/pymockserver/values.yaml`) instead of multiple processes/threads
+> (see `helm/pymockserver/values.yaml`) instead of multiple processes/threads
 > within one container - mocks are not shared across pods, only within one.
 
 # Configuration (environment variables)
@@ -335,6 +335,6 @@ and versioning/changelog is managed by [Commitizen](https://commitizen-tools.git
 # Docker & Helm
 
 A production-ready Docker image (Python 3.14 alpine, single uvicorn process) is
-provided via the `Dockerfile`. A Helm v3 chart is available under `helm_v3/pymockserver`,
+provided via the `Dockerfile`. A Helm chart is available under `helm/pymockserver`,
 including readiness/liveness probes pointed at `/_meta/health` and support for mounting
 [fixture files](#fixtures) via the `fixtureFiles` value.

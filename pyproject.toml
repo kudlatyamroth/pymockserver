@@ -37,8 +37,8 @@ version = "2.2.0"
 annotated_tag = true
 version_files = [
     "pymockserver/main.py:__version__",
-    "helm_v3/pymockserver/Chart.yaml:version",
-    "helm_v3/pymockserver/Chart.yaml:appVersion",
+    "helm/pymockserver/Chart.yaml:version",
+    "helm/pymockserver/Chart.yaml:appVersion",
 ]
 
 [tool.ruff]

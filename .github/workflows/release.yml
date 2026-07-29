@@ -41,8 +41,8 @@ jobs:
       - name: Generate helm package
         run: |
           mkdir -p dist
-          helm package helm_v3/pymockserver/
-          mv pymockserver-`git tag | tail -n 1`.tgz dist/helm_v3-pymockserver.tgz
+          helm package helm/pymockserver/
+          mv pymockserver-`git tag | tail -n 1`.tgz dist/pymockserver.tgz
       - name: Publish GitHub Release
         uses: fnkr/github-action-ghr@v1.3
         env:
