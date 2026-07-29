@@ -4,6 +4,13 @@
 
 
 
+## 2.3.0 (2026-07-29)
+
+### Feat
+
+- drop gunicorn, run single uvicorn process with plain in-memory dict
+- upgrade to Python 3.14 and bump all dependencies to latest
+
 ## 2.2.0 (2024-06-27)
 
 ### Feat
