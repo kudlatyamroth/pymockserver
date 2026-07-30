@@ -13,6 +13,10 @@ Main differences to other solutions like `https://www.mock-server.com/`:
 - easier to delete mock
 - faster create and get mock for request
 
+> [!TIP]
+> If you're an LLM/agent working with this repo, see [`llms.txt`](./llms.txt) for a
+> concise, curated map of the docs (README, OpenAPI schema, changelog, source layout).
+
 # Table of contents
 
 - [How it works](#how-it-works)
